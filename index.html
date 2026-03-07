@@ -546,16 +546,13 @@
       // ---------- CONFIGURATION ----------
       const OWNER_NUMBER = '264858037092';
       const BASE_URL = 'https://amawinagiveaway.netlify.app';
-      // *** UPDATED WITH YOUR NEW WEB APP URL ***
-      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwb1nS-0VFjGo83bry-9YrWgWFnL2lDEXuWA8TsKEAKsNc6g-2Qc19a5_PXtBldajIf/exec';
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztqdjzPHHApGJRnAkLWsTP5zlETGMqvHfUVUMYW1NgLAw64KxuB-Mc9f0iAdt0eKo/exec';
 
       // ---------- USER IDENTIFICATION ----------
       const currentUserWA = localStorage.getItem('amawina_user_wa');
       
       // ---------- GLOBAL DATA STORAGE ----------
-      let allReferrals = []; // Will store all rows from Google Sheets
-      let currentUserMonthly = 0;
-      let currentUserLifetime = 0;
+      let allReferrals = [];
 
       // ---------- HELPER FUNCTIONS ----------
       function maskNumber(num) {
@@ -611,27 +608,40 @@
       setInterval(updateCountdown,1000);
       updateCountdown();
 
-      // ---------- FETCH ALL REFERRAL DATA FROM GOOGLE SHEETS ----------
+      // ---------- FIXED FETCH WITH CORS HANDLING ----------
       async function fetchReferralData() {
         try {
-          const response = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+          const url = APPS_SCRIPT_URL + '?action=getAll&t=' + Date.now();
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          
           const data = await response.json();
           
           if (data.success && data.rows) {
             allReferrals = data.rows;
             
-            // Process data for current user if logged in
             if (currentUserWA) {
               calculateUserReferrals(currentUserWA);
             }
             
-            // Update leaderboard
             calculateLeaderboard();
             
             console.log('Data refreshed:', new Date().toLocaleTimeString());
           }
         } catch (error) {
           console.error('Error fetching referral data:', error);
+          // Keep showing "Loading leaderboard..." - no user-facing error
         }
       }
 
@@ -645,11 +655,8 @@
         let lifetimeCount = 0;
         
         allReferrals.forEach(row => {
-          // Check if this row is a verified referral for the current user
           if (row.invitedBy === userWA && row.verified === 'YES') {
             lifetimeCount++;
-            
-            // Check if referral happened this month
             const referralDate = new Date(row.timestamp);
             if (referralDate.getMonth() === currentMonth && 
                 referralDate.getFullYear() === currentYear) {
@@ -658,10 +665,6 @@
           }
         });
         
-        currentUserMonthly = monthlyCount;
-        currentUserLifetime = lifetimeCount;
-        
-        // Update UI
         updateProgressBars(monthlyCount, lifetimeCount);
       }
 
@@ -686,24 +689,19 @@
 
       // ---------- CALCULATE LEADERBOARD ----------
       function calculateLeaderboard() {
-        // Create map of referrers and their verified counts
         const referrerMap = new Map();
-        const nameMap = new Map(); // Store names by WhatsApp number
+        const nameMap = new Map();
         
         allReferrals.forEach(row => {
-          // Store name for this WhatsApp number
           if (row.whatsapp && row.name) {
             nameMap.set(row.whatsapp, row.name);
           }
-          
-          // Count verified referrals
           if (row.invitedBy && row.verified === 'YES') {
             const inviter = row.invitedBy;
             referrerMap.set(inviter, (referrerMap.get(inviter) || 0) + 1);
           }
         });
         
-        // Convert to array and sort
         const leaderboardArray = [];
         referrerMap.forEach((count, wa) => {
           leaderboardArray.push({
@@ -713,10 +711,7 @@
           });
         });
         
-        // Sort descending by count
         leaderboardArray.sort((a, b) => b.count - a.count);
-        
-        // Take top 6
         const topSix = leaderboardArray.slice(0, 6);
         renderLeaderboard(topSix);
       }
@@ -762,7 +757,10 @@
       // ---------- CHECK FOR DUPLICATE REGISTRATION ----------
       async function checkDuplicateWhatsApp(whatsapp) {
         try {
-          const response = await fetch(APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(whatsapp));
+          const response = await fetch(APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(whatsapp) + '&t=' + Date.now(), {
+            mode: 'cors',
+            cache: 'no-cache'
+          });
           const data = await response.json();
           return data.exists;
         } catch (error) {
@@ -772,13 +770,15 @@
       }
 
       // ---------- INITIALIZE ----------
-      // Fetch data immediately and then every 60 seconds
-      fetchReferralData();
+      setTimeout(() => {
+        fetchReferralData();
+      }, 1000);
+      
       setInterval(fetchReferralData, 60000);
 
       document.getElementById('invitedBy').value = new URLSearchParams(window.location.search).get('ref') || '';
 
-      // ---------- REGISTRATION FORM HANDLER (FIXED) ----------
+      // ---------- REGISTRATION FORM HANDLER ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
@@ -788,7 +788,6 @@
         const wa = document.getElementById('whatsapp').value.trim();
         const invited = document.getElementById('invitedBy').value.trim();
 
-        // Validation
         if (!name) { 
           errorDiv.innerText = 'Please enter your full name'; 
           errorDiv.style.display = 'block'; 
@@ -801,14 +800,12 @@
           return; 
         }
         
-        // Self-referral prevention
         if (invited && wa.replace(/\D/g,'') === invited.replace(/\D/g,'')) {
           errorDiv.innerText = 'You cannot refer yourself'; 
           errorDiv.style.display = 'block'; 
           return;
         }
 
-        // Check for duplicate registration
         const isDuplicate = await checkDuplicateWhatsApp(wa);
         if (isDuplicate) {
           errorDiv.innerText = 'This WhatsApp number has already been registered'; 
@@ -817,14 +814,12 @@
         }
 
         try {
-          // Send registration data to Google Sheets
           const payload = {
             name: name,
             whatsapp: wa,
             invitedBy: invited || ''
           };
 
-          // Using no-cors mode, but we'll still fire and forget
           await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -832,11 +827,9 @@
             body: JSON.stringify(payload)
           });
 
-          // Store user data in localStorage
           localStorage.setItem('amawina_user_wa', wa);
           localStorage.setItem('amawina_user_name', name);
 
-          // Show celebration
           document.getElementById('formWrapper').classList.add('hidden');
           document.getElementById('celebrationPopup').classList.remove('hidden');
           
@@ -844,29 +837,24 @@
             confetti({particleCount: 100, spread: 70, origin: {y: 0.6}});
           }
 
-          // Generate and display referral link
           const digits = wa.replace(/\D/g, '');
           const link = `${BASE_URL}/?ref=${digits}`;
           document.getElementById('referralLinkDisplay').innerText = link;
 
-          // Set up verification button
           document.getElementById('verifyBtn').onclick = () => {
             window.open(`https://wa.me/${OWNER_NUMBER}?text=VERIFY%20${digits}`, '_blank');
           };
 
-          // Set up copy button
           document.getElementById('copyLinkBtn').onclick = () => {
             navigator.clipboard.writeText(link);
             alert('✅ Referral link copied!');
           };
 
-          // Set up share button
           document.getElementById('shareBtn').onclick = () => {
             const message = `Join AmaWina Giveaway and win cash rewards! Use my referral link: ${link}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
           };
 
-          // Refresh data
           setTimeout(() => {
             fetchReferralData();
           }, 2000);
@@ -893,7 +881,7 @@ END:VCARD`;
         URL.revokeObjectURL(url);
       });
 
-      // ---------- FIXED EXPANDABLE CARDS ----------
+      // ---------- EXPANDABLE CARDS ----------
       document.querySelectorAll('.expandable').forEach(card => {
         card.addEventListener('click', function() {
           this.classList.toggle('open');
