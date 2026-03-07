@@ -272,6 +272,43 @@
     .ref-box { background: #1e3a4b; border-radius: 60px; padding: 1rem; border: 1px solid #d4af37; word-break: break-all; }
     .hidden { display: none !important; }
     
+    /* Login form styles */
+    #loginSection {
+      margin-bottom: 1.5rem;
+    }
+    
+    .login-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    
+    .login-row input {
+      flex: 1;
+    }
+    
+    .login-row button {
+      width: auto;
+      padding: 1.2rem 1.5rem;
+      white-space: nowrap;
+    }
+    
+    .logout-btn {
+      margin-left: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .user-welcome {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1e3a4b;
+      border-radius: 60px;
+      padding: 0.8rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
     /* ===== FIXED EXPANDABLE CARDS - FULL CONTENT ALWAYS VISIBLE ===== */
     .expandable {
       cursor: pointer;
@@ -330,6 +367,14 @@
       .channel-btn {
         font-size: 0.95rem;
       }
+      
+      .login-row {
+        flex-direction: column;
+      }
+      
+      .login-row button {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -361,12 +406,32 @@
       </div>
       <ol style="list-style-type: none; padding-left: 0;">
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">1.</span> <strong>Follow Both WhatsApp Channels</strong><br>Participants must follow the AmaWina WhatsApp Channel and the WinaX WhatsApp Channel to participate in the giveaway.</li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">2.</span> <strong>Register for the Giveaway</strong><br>Enter your name and WhatsApp number to receive your personal referral link.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">2.</span> <strong>Register for the Giveaway</strong><br>Enter your name, choose a username, and provide your WhatsApp number.</li>
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">3.</span> <strong>Get Your Personal Referral Link</strong><br>After registering you will receive your unique referral link.<br>Example: <span class="gold">https://amawinagiveaway.netlify.app/?ref=0812345678</span></li>
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">4.</span> <strong>Invite Friends</strong><br>Share your referral link with friends. When they register using your link, the system records the referral automatically.</li>
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">5.</span> <strong>Friends Must Verify Their Entry</strong><br>After registering, each participant must verify their entry by sending the WhatsApp verification message.<br>Example message: <span class="gold">VERIFY 0812345678</span><br>The message must be sent exactly as provided.</li>
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">6.</span> <strong>Verified Referrals Count</strong><br>Only verified referrals are counted. Participants must invite a minimum of 10 verified referrals within the month to qualify for the monthly draw.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">7.</span> <strong>Login to Track Progress</strong><br>Use your username and WhatsApp number to login and view your progress from any device.</li>
       </ol>
+    </div>
+
+    <!-- Login Section -->
+    <div class="card" id="loginSection">
+      <h2 class="gold">🔐 Login to Your Account</h2>
+      <div id="loginError" class="error-msg" style="background:#6d2e2e; border-radius:60px; padding:0.8rem; margin-bottom:1rem; display:none;"></div>
+      
+      <div id="loginFormContainer">
+        <div class="login-row">
+          <input type="text" id="loginUsername" placeholder="Username" required>
+          <input type="tel" id="loginWhatsapp" placeholder="WhatsApp Number" required>
+          <button class="btn-primary" id="loginBtn">Login</button>
+        </div>
+      </div>
+      
+      <div id="userWelcome" class="user-welcome hidden">
+        <span>Welcome, <span id="welcomeUsername"></span>!</span>
+        <button class="btn-outline logout-btn" id="logoutBtn">Logout</button>
+      </div>
     </div>
 
     <!-- Progress Cards -->
@@ -455,8 +520,12 @@
             <input type="text" id="fullName" placeholder="John Doe" required>
           </div>
           <div class="form-group">
+            <label>Username <span class="gold">(this will be used to login)</span></label>
+            <input type="text" id="username" placeholder="john123" required>
+          </div>
+          <div class="form-group">
             <label>WhatsApp Number (Namibia)</label>
-            <input type="tel" id="whatsapp" placeholder="0812345678" required>
+            <input type="tel" id="whatsapp" placeholder="0812345678 or +264812345678" required>
           </div>
           <button type="submit" class="btn-primary">✔️ Register & Get Referral Link</button>
         </form>
@@ -543,28 +612,43 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script>
     (function() {
-      // ---------- CONFIGURATION WITH YOUR NEW WORKING URL ----------
+      // ---------- CONFIGURATION ----------
       const OWNER_NUMBER = '264858037092';
       const BASE_URL = 'https://amawinagiveaway.netlify.app';
       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm-YZnumNYnR2rWKZZHJ8gyQrx3XRLS7eyE5Sf6FUBnqoBPdm2LsI4ajKWBnFMqhZo/exec';
 
       // ---------- USER IDENTIFICATION ----------
-      const currentUserWA = localStorage.getItem('amawina_user_wa');
+      let currentUserWA = localStorage.getItem('amawina_user_wa');
+      let currentUsername = localStorage.getItem('amawina_username');
+      let currentFullName = localStorage.getItem('amawina_user_name');
       
       // ---------- GLOBAL DATA STORAGE ----------
       let allReferrals = [];
+      let monthlyWinners = [];
 
       // ---------- HELPER FUNCTIONS ----------
       function maskNumber(num) {
         const cleaned = num.toString().replace(/\D/g, '');
         if (cleaned.length < 7) return num;
-        return cleaned.slice(0,3) + '***' + cleaned.slice(-4);
+        
+        // Mask only 2 digits in the middle: 0815562858 -> 08155**858
+        const start = cleaned.slice(0, 5);
+        const end = cleaned.slice(-3);
+        return start + '**' + end;
       }
 
       function isValidNamibian(num) {
         const c = num.replace(/\s+/g, '');
+        // Support 081xxxxxxx, 085xxxxxxx, +26481xxxxxxx, +26485xxxxxxx
         return /^081\d{7}$/.test(c) || /^085\d{7}$/.test(c) || 
                /^\+26481\d{7}$/.test(c) || /^\+26485\d{7}$/.test(c);
+      }
+
+      function normalizeNumber(num) {
+        const cleaned = num.replace(/\s+/g, '');
+        if (cleaned.startsWith('081')) return '+264' + cleaned.slice(1);
+        if (cleaned.startsWith('085')) return '+264' + cleaned.slice(1);
+        return cleaned; // Already +264 format
       }
 
       // ---------- NAMIBIA TIME ----------
@@ -608,7 +692,7 @@
       setInterval(updateCountdown,1000);
       updateCountdown();
 
-      // ---------- FETCH DATA (SIMPLIFIED - SHOULD WORK NOW) ----------
+      // ---------- FETCH DATA ----------
       async function fetchReferralData() {
         try {
           const response = await fetch(APPS_SCRIPT_URL + '?action=getAll&t=' + Date.now());
@@ -616,6 +700,9 @@
           
           if (data.success && data.rows) {
             allReferrals = data.rows;
+            
+            // Check for monthly draw (5th of month)
+            checkAndPerformMonthlyDraw();
             
             if (currentUserWA) {
               calculateUserReferrals(currentUserWA);
@@ -626,9 +713,106 @@
           }
         } catch (error) {
           console.error('Error fetching referral data:', error);
-          document.getElementById('leaderboard-container').innerHTML = 
-            '<p style="text-align:center; color:#d4af37;">Loading...</p>';
         }
+      }
+
+      // ---------- MONTHLY DRAW LOGIC ----------
+      function checkAndPerformMonthlyDraw() {
+        const now = getNamibiaTime();
+        const today = now.getDate();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        
+        // Check if it's the 5th and time is between 00:00 and 00:05
+        if (today === 5 && currentHour === 0 && currentMinute < 5) {
+          
+          // Check if we already performed draw today (prevent multiple runs)
+          const lastDrawDate = localStorage.getItem('last_draw_date');
+          const todayStr = now.toDateString();
+          
+          if (lastDrawDate !== todayStr) {
+            performMonthlyDraw();
+            localStorage.setItem('last_draw_date', todayStr);
+          }
+        }
+      }
+
+      function performMonthlyDraw() {
+        // Get previous month (since we're at 5th of new month)
+        const now = getNamibiaTime();
+        const drawMonth = now.getMonth() - 1; // Previous month
+        const drawYear = now.getFullYear();
+        if (drawMonth < 0) {
+          drawMonth = 11;
+          drawYear--;
+        }
+        
+        // Find all users with 10+ verified referrals in previous month
+        const qualifiedUsers = new Map();
+        const userNames = new Map();
+        
+        allReferrals.forEach(row => {
+          if (row.verified === 'YES' && row.invitedBy) {
+            const referralDate = new Date(row.timestamp);
+            if (referralDate.getMonth() === drawMonth && 
+                referralDate.getFullYear() === drawYear) {
+              
+              const inviter = row.invitedBy.toString();
+              qualifiedUsers.set(inviter, (qualifiedUsers.get(inviter) || 0) + 1);
+              
+              // Store name if we have it
+              if (row.name && !userNames.has(inviter)) {
+                userNames.set(inviter, row.name);
+              }
+            }
+          }
+        });
+        
+        // Filter to only those with 10+ referrals
+        const eligible = [];
+        qualifiedUsers.forEach((count, wa) => {
+          if (count >= 10) {
+            eligible.push({
+              wa: wa,
+              name: userNames.get(wa) || 'Anonymous',
+              count: count
+            });
+          }
+        });
+        
+        // Select 3 random winners if we have enough eligible
+        if (eligible.length >= 3) {
+          // Shuffle array
+          for (let i = eligible.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [eligible[i], eligible[j]] = [eligible[j], eligible[i]];
+          }
+          
+          const winners = eligible.slice(0, 3);
+          monthlyWinners = winners;
+          
+          // Display winners
+          displayMonthlyWinners(winners);
+        }
+      }
+
+      function displayMonthlyWinners(winners) {
+        const prizes = ['N$1500', 'N$1000', 'N$500'];
+        let html = '';
+        
+        winners.forEach((winner, idx) => {
+          const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
+          const maskedWA = maskNumber(winner.wa);
+          
+          html += `<div class="winner-item">
+            ${medal} ${idx + 1} Place<br>
+            Name: ${winner.name}<br>
+            WhatsApp: ${maskedWA}<br>
+            Prize: ${prizes[idx]}
+          </div>`;
+        });
+        
+        document.getElementById('winnersContainer').innerHTML = html;
       }
 
       // ---------- CALCULATE USER REFERRAL COUNTS ----------
@@ -743,10 +927,69 @@
         document.getElementById('leaderboard-container').innerHTML = html;
       }
 
+      // ---------- LOGIN FUNCTION ----------
+      async function login(username, whatsapp) {
+        try {
+          // Normalize WhatsApp number
+          const normalizedWA = normalizeNumber(whatsapp);
+          
+          // Find user in allReferrals
+          const userRow = allReferrals.find(row => 
+            row.name && row.name.includes(username) && row.whatsapp.toString() === normalizedWA
+          );
+          
+          if (userRow) {
+            // Store in localStorage
+            localStorage.setItem('amawina_user_wa', normalizedWA);
+            localStorage.setItem('amawina_username', username);
+            localStorage.setItem('amawina_user_name', userRow.name);
+            
+            currentUserWA = normalizedWA;
+            currentUsername = username;
+            currentFullName = userRow.name;
+            
+            // Update UI
+            document.getElementById('loginFormContainer').classList.add('hidden');
+            document.getElementById('userWelcome').classList.remove('hidden');
+            document.getElementById('welcomeUsername').innerText = username;
+            
+            // Calculate and show progress
+            calculateUserReferrals(normalizedWA);
+            
+            return true;
+          } else {
+            document.getElementById('loginError').innerText = 'Invalid username or WhatsApp number';
+            document.getElementById('loginError').style.display = 'block';
+            return false;
+          }
+        } catch (error) {
+          console.error('Login error:', error);
+          return false;
+        }
+      }
+
+      // ---------- LOGOUT FUNCTION ----------
+      function logout() {
+        localStorage.removeItem('amawina_user_wa');
+        localStorage.removeItem('amawina_username');
+        localStorage.removeItem('amawina_user_name');
+        
+        currentUserWA = null;
+        currentUsername = null;
+        currentFullName = null;
+        
+        document.getElementById('loginFormContainer').classList.remove('hidden');
+        document.getElementById('userWelcome').classList.add('hidden');
+        
+        // Reset progress bars to 0
+        updateProgressBars(0, 0);
+      }
+
       // ---------- CHECK FOR DUPLICATE REGISTRATION ----------
       async function checkDuplicateWhatsApp(whatsapp) {
         try {
-          const response = await fetch(APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(whatsapp) + '&t=' + Date.now());
+          const normalizedWA = normalizeNumber(whatsapp);
+          const response = await fetch(APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(normalizedWA) + '&t=' + Date.now());
           const data = await response.json();
           return data.exists;
         } catch (error) {
@@ -764,24 +1007,55 @@
 
       document.getElementById('invitedBy').value = new URLSearchParams(window.location.search).get('ref') || '';
 
+      // ---------- LOGIN BUTTON HANDLER ----------
+      document.getElementById('loginBtn').addEventListener('click', async () => {
+        const username = document.getElementById('loginUsername').value.trim();
+        const whatsapp = document.getElementById('loginWhatsapp').value.trim();
+        
+        if (!username || !whatsapp) {
+          document.getElementById('loginError').innerText = 'Please enter both username and WhatsApp number';
+          document.getElementById('loginError').style.display = 'block';
+          return;
+        }
+        
+        await login(username, whatsapp);
+      });
+
+      // ---------- LOGOUT BUTTON HANDLER ----------
+      document.getElementById('logoutBtn').addEventListener('click', logout);
+
+      // ---------- CHECK IF USER IS ALREADY LOGGED IN ----------
+      if (currentUserWA && currentUsername) {
+        document.getElementById('loginFormContainer').classList.add('hidden');
+        document.getElementById('userWelcome').classList.remove('hidden');
+        document.getElementById('welcomeUsername').innerText = currentUsername;
+      }
+
       // ---------- REGISTRATION FORM HANDLER ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
         errorDiv.style.display = 'none';
 
-        const name = document.getElementById('fullName').value.trim();
+        const fullName = document.getElementById('fullName').value.trim();
+        const username = document.getElementById('username').value.trim();
         const wa = document.getElementById('whatsapp').value.trim();
         const invited = document.getElementById('invitedBy').value.trim();
 
-        if (!name) { 
+        if (!fullName) { 
           errorDiv.innerText = 'Please enter your full name'; 
           errorDiv.style.display = 'block'; 
           return; 
         }
         
+        if (!username) { 
+          errorDiv.innerText = 'Please choose a username'; 
+          errorDiv.style.display = 'block'; 
+          return; 
+        }
+        
         if (!isValidNamibian(wa)) { 
-          errorDiv.innerText = 'Please enter a valid Namibian number'; 
+          errorDiv.innerText = 'Please enter a valid Namibian number (081... or +264...)'; 
           errorDiv.style.display = 'block'; 
           return; 
         }
@@ -792,7 +1066,8 @@
           return;
         }
 
-        const isDuplicate = await checkDuplicateWhatsApp(wa);
+        const normalizedWA = normalizeNumber(wa);
+        const isDuplicate = await checkDuplicateWhatsApp(normalizedWA);
         if (isDuplicate) {
           errorDiv.innerText = 'This WhatsApp number has already been registered'; 
           errorDiv.style.display = 'block'; 
@@ -800,9 +1075,12 @@
         }
 
         try {
+          // Combine full name and username for the Name column
+          const combinedName = `${fullName} (${username})`;
+          
           const payload = {
-            name: name,
-            whatsapp: wa,
+            name: combinedName,
+            whatsapp: normalizedWA,
             invitedBy: invited || ''
           };
 
@@ -813,17 +1091,29 @@
             body: JSON.stringify(payload)
           });
 
-          localStorage.setItem('amawina_user_wa', wa);
-          localStorage.setItem('amawina_user_name', name);
+          // Store user data in localStorage and auto-login
+          localStorage.setItem('amawina_user_wa', normalizedWA);
+          localStorage.setItem('amawina_username', username);
+          localStorage.setItem('amawina_user_name', combinedName);
+          
+          currentUserWA = normalizedWA;
+          currentUsername = username;
+          currentFullName = combinedName;
 
+          // Show celebration
           document.getElementById('formWrapper').classList.add('hidden');
           document.getElementById('celebrationPopup').classList.remove('hidden');
+          
+          // Update login UI
+          document.getElementById('loginFormContainer').classList.add('hidden');
+          document.getElementById('userWelcome').classList.remove('hidden');
+          document.getElementById('welcomeUsername').innerText = username;
           
           if (window.confetti) {
             confetti({particleCount: 100, spread: 70, origin: {y: 0.6}});
           }
 
-          const digits = wa.replace(/\D/g, '');
+          const digits = normalizedWA.replace(/\D/g, '');
           const link = `${BASE_URL}/?ref=${digits}`;
           document.getElementById('referralLinkDisplay').innerText = link;
 
