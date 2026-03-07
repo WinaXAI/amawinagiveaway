@@ -350,9 +350,6 @@
     <div class="glow-light" style="top:10%; left:-50px;"></div>
   </div>
 
-  <!-- Hidden iframe for fetching data (CORS workaround) -->
-  <iframe id="dataFrame" src="about:blank"></iframe>
-
   <div class="container">
     <h1>AmaWina Global Referral Giveaway</h1>
     <div class="subtitle">Invite Friends. Win Cash Rewards.</div>
@@ -616,17 +613,29 @@
       setInterval(updateCountdown,1000);
       updateCountdown();
 
-      // ---------- FETCH DATA USING JSONP WORKAROUND ----------
-      function fetchReferralData() {
-        const iframe = document.getElementById('dataFrame');
-        const timestamp = Date.now();
-        
-        // Create a callback function name
-        const callbackName = 'jsonp_callback_' + timestamp;
-        
-        // Create global callback function
-        window[callbackName] = function(data) {
-          if (data && data.success && data.rows) {
+      // ---------- FETCH DATA USING CORS PROXY ----------
+      async function fetchReferralData() {
+        try {
+          // Use a public CORS proxy to bypass restrictions
+          const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+          const targetUrl = APPS_SCRIPT_URL + '?action=getAll&t=' + Date.now();
+          
+          // Note: Users need to click "Request temporary access" at cors-anywhere once
+          const response = await fetch(proxyUrl + targetUrl, {
+            method: 'GET',
+            headers: {
+              'Origin': window.location.origin,
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          
+          const data = await response.json();
+          
+          if (data.success && data.rows) {
             allReferrals = data.rows;
             
             if (currentUserWA) {
@@ -636,14 +645,12 @@
             calculateLeaderboard();
             console.log('Data refreshed:', new Date().toLocaleTimeString());
           }
-          
-          // Clean up
-          delete window[callbackName];
-          iframe.src = 'about:blank';
-        };
-        
-        // Set iframe source to the API URL with callback parameter
-        iframe.src = APPS_SCRIPT_URL + '?action=getAll&callback=' + callbackName + '&t=' + timestamp;
+        } catch (error) {
+          console.error('Error fetching referral data:', error);
+          // Show instruction for cors-anywhere
+          document.getElementById('leaderboard-container').innerHTML = 
+            '<p style="text-align:center; color:#d4af37;">Please click <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" style="color:#2ecc71;">here</a> to enable data access, then refresh the page.</p>';
+        }
       }
 
       // ---------- CALCULATE USER REFERRAL COUNTS ----------
@@ -757,20 +764,24 @@
 
       // ---------- CHECK FOR DUPLICATE REGISTRATION ----------
       async function checkDuplicateWhatsApp(whatsapp) {
-        // For duplicate check, we'll use a simple fetch with no-cors mode
-        // This won't return data but will still send the request
-        // We'll rely on server-side validation for duplicates
         try {
-          await fetch(APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(whatsapp) + '&t=' + Date.now(), {
-            mode: 'no-cors'
+          const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+          const targetUrl = APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(whatsapp) + '&t=' + Date.now();
+          
+          const response = await fetch(proxyUrl + targetUrl, {
+            method: 'GET',
+            headers: {
+              'Origin': window.location.origin,
+              'X-Requested-With': 'XMLHttpRequest'
+            }
           });
+          
+          const data = await response.json();
+          return data.exists;
         } catch (error) {
           console.error('Error checking duplicate:', error);
+          return false;
         }
-        
-        // Since we can't get response with no-cors, we'll assume it's not a duplicate
-        // The actual duplicate check will happen server-side and show error if needed
-        return false;
       }
 
       // ---------- INITIALIZE ----------
