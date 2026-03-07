@@ -272,11 +272,6 @@
     .ref-box { background: #1e3a4b; border-radius: 60px; padding: 1rem; border: 1px solid #d4af37; word-break: break-all; }
     .hidden { display: none !important; }
     
-    /* Hidden iframe for data fetching */
-    #dataFrame {
-      display: none;
-    }
-    
     /* ===== FIXED EXPANDABLE CARDS - FULL CONTENT ALWAYS VISIBLE ===== */
     .expandable {
       cursor: pointer;
@@ -548,10 +543,10 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script>
     (function() {
-      // ---------- CONFIGURATION ----------
+      // ---------- CONFIGURATION WITH YOUR NEW WORKING URL ----------
       const OWNER_NUMBER = '264858037092';
       const BASE_URL = 'https://amawinagiveaway.netlify.app';
-      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztqdjzPHHApGJRnAkLWsTP5zlETGMqvHfUVUMYW1NgLAw64KxuB-Mc9f0iAdt0eKo/exec';
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm-YZnumNYnR2rWKZZHJ8gyQrx3XRLS7eyE5Sf6FUBnqoBPdm2LsI4ajKWBnFMqhZo/exec';
 
       // ---------- USER IDENTIFICATION ----------
       const currentUserWA = localStorage.getItem('amawina_user_wa');
@@ -561,7 +556,7 @@
 
       // ---------- HELPER FUNCTIONS ----------
       function maskNumber(num) {
-        const cleaned = num.replace(/\D/g, '');
+        const cleaned = num.toString().replace(/\D/g, '');
         if (cleaned.length < 7) return num;
         return cleaned.slice(0,3) + '***' + cleaned.slice(-4);
       }
@@ -613,26 +608,10 @@
       setInterval(updateCountdown,1000);
       updateCountdown();
 
-      // ---------- FETCH DATA USING CORS PROXY ----------
+      // ---------- FETCH DATA (SIMPLIFIED - SHOULD WORK NOW) ----------
       async function fetchReferralData() {
         try {
-          // Use a public CORS proxy to bypass restrictions
-          const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-          const targetUrl = APPS_SCRIPT_URL + '?action=getAll&t=' + Date.now();
-          
-          // Note: Users need to click "Request temporary access" at cors-anywhere once
-          const response = await fetch(proxyUrl + targetUrl, {
-            method: 'GET',
-            headers: {
-              'Origin': window.location.origin,
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
-          
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          
+          const response = await fetch(APPS_SCRIPT_URL + '?action=getAll&t=' + Date.now());
           const data = await response.json();
           
           if (data.success && data.rows) {
@@ -647,9 +626,8 @@
           }
         } catch (error) {
           console.error('Error fetching referral data:', error);
-          // Show instruction for cors-anywhere
           document.getElementById('leaderboard-container').innerHTML = 
-            '<p style="text-align:center; color:#d4af37;">Please click <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" style="color:#2ecc71;">here</a> to enable data access, then refresh the page.</p>';
+            '<p style="text-align:center; color:#d4af37;">Loading...</p>';
         }
       }
 
@@ -663,7 +641,10 @@
         let lifetimeCount = 0;
         
         allReferrals.forEach(row => {
-          if (row.invitedBy === userWA && row.verified === 'YES') {
+          const invitedBy = row.invitedBy ? row.invitedBy.toString() : '';
+          const userWAStr = userWA.toString();
+          
+          if (invitedBy === userWAStr && row.verified === 'YES') {
             lifetimeCount++;
             const referralDate = new Date(row.timestamp);
             if (referralDate.getMonth() === currentMonth && 
@@ -702,10 +683,10 @@
         
         allReferrals.forEach(row => {
           if (row.whatsapp && row.name) {
-            nameMap.set(row.whatsapp, row.name);
+            nameMap.set(row.whatsapp.toString(), row.name);
           }
           if (row.invitedBy && row.verified === 'YES') {
-            const inviter = row.invitedBy;
+            const inviter = row.invitedBy.toString();
             referrerMap.set(inviter, (referrerMap.get(inviter) || 0) + 1);
           }
         });
@@ -765,17 +746,7 @@
       // ---------- CHECK FOR DUPLICATE REGISTRATION ----------
       async function checkDuplicateWhatsApp(whatsapp) {
         try {
-          const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-          const targetUrl = APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(whatsapp) + '&t=' + Date.now();
-          
-          const response = await fetch(proxyUrl + targetUrl, {
-            method: 'GET',
-            headers: {
-              'Origin': window.location.origin,
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
-          
+          const response = await fetch(APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(whatsapp) + '&t=' + Date.now());
           const data = await response.json();
           return data.exists;
         } catch (error) {
@@ -817,6 +788,13 @@
         
         if (invited && wa.replace(/\D/g,'') === invited.replace(/\D/g,'')) {
           errorDiv.innerText = 'You cannot refer yourself'; 
+          errorDiv.style.display = 'block'; 
+          return;
+        }
+
+        const isDuplicate = await checkDuplicateWhatsApp(wa);
+        if (isDuplicate) {
+          errorDiv.innerText = 'This WhatsApp number has already been registered'; 
           errorDiv.style.display = 'block'; 
           return;
         }
