@@ -406,10 +406,10 @@
       </div>
       <ol style="list-style-type: none; padding-left: 0;">
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">1.</span> <strong>Follow Both WhatsApp Channels</strong><br>Participants must follow the AmaWina WhatsApp Channel and the WinaX WhatsApp Channel to participate in the giveaway.</li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">2.</span> <strong>Register for the Giveaway</strong><br>Enter your name, choose a username, and provide your WhatsApp number.</li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">3.</span> <strong>Get Your Personal Referral Link</strong><br>After registering you will receive your unique referral link.<br>Example: <span class="gold">https://amawinagiveaway.netlify.app/?ref=0812345678</span></li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">2.</span> <strong>Register for the Giveaway</strong><br>Choose a unique username and enter your WhatsApp number.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">3.</span> <strong>Get Your Personal Referral Link</strong><br>After registering you will receive your unique referral link.<br>Example: <span class="gold">https://amawinagiveaway.pages.dev/?ref=Felly005</span></li>
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">4.</span> <strong>Invite Friends</strong><br>Share your referral link with friends. When they register using your link, the system records the referral automatically.</li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">5.</span> <strong>Friends Must Verify Their Entry</strong><br>After registering, each participant must verify their entry by sending the WhatsApp verification message.<br>Example message: <span class="gold">VERIFY 0812345678</span><br>The message must be sent exactly as provided.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">5.</span> <strong>Friends Must Verify Their Entry</strong><br>After registering, each participant must verify their entry by sending the WhatsApp verification message.<br>Example message: <span class="gold">VERIFY Felly005</span><br>The message must be sent exactly as provided from the same WhatsApp number used during registration.</li>
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">6.</span> <strong>Verified Referrals Count</strong><br>Only verified referrals are counted. Participants must invite a minimum of 10 verified referrals within the month to qualify for the monthly draw.</li>
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">7.</span> <strong>Login to Track Progress</strong><br>Use your username and WhatsApp number to login and view your progress from any device.</li>
       </ol>
@@ -422,7 +422,7 @@
       
       <div id="loginFormContainer">
         <div class="login-row">
-          <input type="text" id="loginUsername" placeholder="Username" required>
+          <input type="text" id="loginUsername" placeholder="Username (e.g., Felly005)" required>
           <input type="tel" id="loginWhatsapp" placeholder="WhatsApp Number" required>
           <button class="btn-primary" id="loginBtn">Login</button>
         </div>
@@ -516,12 +516,8 @@
         <form id="registerForm">
           <input type="hidden" id="invitedBy" name="invitedBy" value="">
           <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="fullName" placeholder="John Doe" required>
-          </div>
-          <div class="form-group">
-            <label>Username <span class="gold">(this will be used to login)</span></label>
-            <input type="text" id="username" placeholder="john123" required>
+            <label>Username <span class="gold">(unique, no spaces, this will be used in your referral link and to login)</span></label>
+            <input type="text" id="username" placeholder="e.g., Felly005" required pattern="[A-Za-z0-9]+" title="Username must contain only letters and numbers, no spaces">
           </div>
           <div class="form-group">
             <label>WhatsApp Number (Namibia)</label>
@@ -536,10 +532,11 @@
         <div style="font-size:3rem;">🎉🎁✨</div>
         <h2 class="gold">Entry Submitted Successfully!</h2>
         <p>✅ WhatsApp verification required</p>
+        <p class="gold">Send this message: <strong id="verificationMessage">VERIFY Felly005</strong></p>
         <button class="btn-primary" id="verifyBtn" style="margin:1rem 0;">📲 Verify on WhatsApp</button>
         <hr>
         <p class="gold">Your Referral Link</p>
-        <div class="ref-box" id="referralLinkDisplay">https://amawinagiveaway.netlify.app/?ref=...</div>
+        <div class="ref-box" id="referralLinkDisplay">https://amawinagiveaway.pages.dev/?ref=Felly005</div>
         <div style="display:flex; gap:0.5rem; margin-top:1rem;">
           <button class="btn-outline" id="copyLinkBtn">📋 Copy</button>
           <button class="btn-outline" id="shareBtn">💬 Share</button>
@@ -614,13 +611,12 @@
     (function() {
       // ---------- CONFIGURATION ----------
       const OWNER_NUMBER = '264858037092';
-      const BASE_URL = 'https://amawinagiveaway.netlify.app';
+      const BASE_URL = 'https://amawinagiveaway.pages.dev';
       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm-YZnumNYnR2rWKZZHJ8gyQrx3XRLS7eyE5Sf6FUBnqoBPdm2LsI4ajKWBnFMqhZo/exec';
 
       // ---------- USER IDENTIFICATION ----------
       let currentUserWA = localStorage.getItem('amawina_user_wa');
       let currentUsername = localStorage.getItem('amawina_username');
-      let currentFullName = localStorage.getItem('amawina_user_name');
       
       // ---------- GLOBAL DATA STORAGE ----------
       let allReferrals = [];
@@ -704,8 +700,8 @@
             // Check for monthly draw (5th of month)
             checkAndPerformMonthlyDraw();
             
-            if (currentUserWA) {
-              calculateUserReferrals(currentUserWA);
+            if (currentUsername) {
+              calculateUserReferrals(currentUsername);
             }
             
             calculateLeaderboard();
@@ -806,7 +802,7 @@
           
           html += `<div class="winner-item">
             ${medal} ${idx + 1} Place<br>
-            Name: ${winner.name}<br>
+            Username: ${winner.name}<br>
             WhatsApp: ${maskedWA}<br>
             Prize: ${prizes[idx]}
           </div>`;
@@ -815,8 +811,14 @@
         document.getElementById('winnersContainer').innerHTML = html;
       }
 
+      // ---------- CHECK IF USERNAME EXISTS ----------
+      async function checkUsernameExists(username) {
+        // Search through allReferrals
+        return allReferrals.some(row => row.name === username);
+      }
+
       // ---------- CALCULATE USER REFERRAL COUNTS ----------
-      function calculateUserReferrals(userWA) {
+      function calculateUserReferrals(username) {
         const now = getNamibiaTime();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
@@ -826,9 +828,8 @@
         
         allReferrals.forEach(row => {
           const invitedBy = row.invitedBy ? row.invitedBy.toString() : '';
-          const userWAStr = userWA.toString();
           
-          if (invitedBy === userWAStr && row.verified === 'YES') {
+          if (invitedBy === username && row.verified === 'YES') {
             lifetimeCount++;
             const referralDate = new Date(row.timestamp);
             if (referralDate.getMonth() === currentMonth && 
@@ -863,11 +864,11 @@
       // ---------- CALCULATE LEADERBOARD ----------
       function calculateLeaderboard() {
         const referrerMap = new Map();
-        const nameMap = new Map();
+        const usernameMap = new Map();
         
         allReferrals.forEach(row => {
           if (row.whatsapp && row.name) {
-            nameMap.set(row.whatsapp.toString(), row.name);
+            usernameMap.set(row.whatsapp.toString(), row.name);
           }
           if (row.invitedBy && row.verified === 'YES') {
             const inviter = row.invitedBy.toString();
@@ -876,10 +877,10 @@
         });
         
         const leaderboardArray = [];
-        referrerMap.forEach((count, wa) => {
+        referrerMap.forEach((count, username) => {
           leaderboardArray.push({
-            wa: wa,
-            name: nameMap.get(wa) || 'Anonymous',
+            username: username,
+            name: username, // Username is the name
             count: count
           });
         });
@@ -910,8 +911,10 @@
           else if (rank === 2) prize = 'N$4000';
           else if (rank === 3) prize = 'N$2000';
 
-          const displayName = entry.name || 'Anonymous';
-          const maskedWA = maskNumber(entry.wa);
+          const displayName = entry.username || 'Anonymous';
+          // Find WhatsApp number for this username
+          const userRow = allReferrals.find(row => row.name === entry.username);
+          const maskedWA = userRow ? maskNumber(userRow.whatsapp) : 'Unknown';
 
           html += `<div class="leaderboard-row ${rankClass}">
             <span class="leaderboard-rank">${rank}</span>
@@ -935,18 +938,16 @@
           
           // Find user in allReferrals
           const userRow = allReferrals.find(row => 
-            row.name && row.name.includes(username) && row.whatsapp.toString() === normalizedWA
+            row.name === username && row.whatsapp.toString() === normalizedWA
           );
           
           if (userRow) {
             // Store in localStorage
             localStorage.setItem('amawina_user_wa', normalizedWA);
             localStorage.setItem('amawina_username', username);
-            localStorage.setItem('amawina_user_name', userRow.name);
             
             currentUserWA = normalizedWA;
             currentUsername = username;
-            currentFullName = userRow.name;
             
             // Update UI
             document.getElementById('loginFormContainer').classList.add('hidden');
@@ -954,7 +955,7 @@
             document.getElementById('welcomeUsername').innerText = username;
             
             // Calculate and show progress
-            calculateUserReferrals(normalizedWA);
+            calculateUserReferrals(username);
             
             return true;
           } else {
@@ -972,11 +973,9 @@
       function logout() {
         localStorage.removeItem('amawina_user_wa');
         localStorage.removeItem('amawina_username');
-        localStorage.removeItem('amawina_user_name');
         
         currentUserWA = null;
         currentUsername = null;
-        currentFullName = null;
         
         document.getElementById('loginFormContainer').classList.remove('hidden');
         document.getElementById('userWelcome').classList.add('hidden');
@@ -1037,31 +1036,39 @@
         const errorDiv = document.getElementById('errorMsg');
         errorDiv.style.display = 'none';
 
-        const fullName = document.getElementById('fullName').value.trim();
         const username = document.getElementById('username').value.trim();
         const wa = document.getElementById('whatsapp').value.trim();
         const invited = document.getElementById('invitedBy').value.trim();
 
-        if (!fullName) { 
-          errorDiv.innerText = 'Please enter your full name'; 
-          errorDiv.style.display = 'block'; 
-          return; 
-        }
-        
         if (!username) { 
           errorDiv.innerText = 'Please choose a username'; 
           errorDiv.style.display = 'block'; 
           return; 
         }
         
+        // Check username format (letters and numbers only)
+        if (!/^[A-Za-z0-9]+$/.test(username)) {
+          errorDiv.innerText = 'Username can only contain letters and numbers (no spaces or special characters)'; 
+          errorDiv.style.display = 'block'; 
+          return;
+        }
+        
         if (!isValidNamibian(wa)) { 
-          errorDiv.innerText = 'Please enter a valid Namibian number (081... or +264...)'; 
+          errorDiv.innerText = 'Please enter a valid Namibian number (081..., 085..., or +264...)'; 
           errorDiv.style.display = 'block'; 
           return; 
         }
         
         if (invited && wa.replace(/\D/g,'') === invited.replace(/\D/g,'')) {
           errorDiv.innerText = 'You cannot refer yourself'; 
+          errorDiv.style.display = 'block'; 
+          return;
+        }
+
+        // Check if username already exists
+        const usernameExists = await checkUsernameExists(username);
+        if (usernameExists) {
+          errorDiv.innerText = `Username '${username}' is already taken. Please choose another one.`; 
           errorDiv.style.display = 'block'; 
           return;
         }
@@ -1075,11 +1082,9 @@
         }
 
         try {
-          // Combine full name and username for the Name column
-          const combinedName = `${fullName} (${username})`;
-          
+          // Username goes directly in the Name column
           const payload = {
-            name: combinedName,
+            name: username,
             whatsapp: normalizedWA,
             invitedBy: invited || ''
           };
@@ -1094,11 +1099,9 @@
           // Store user data in localStorage and auto-login
           localStorage.setItem('amawina_user_wa', normalizedWA);
           localStorage.setItem('amawina_username', username);
-          localStorage.setItem('amawina_user_name', combinedName);
           
           currentUserWA = normalizedWA;
           currentUsername = username;
-          currentFullName = combinedName;
 
           // Show celebration
           document.getElementById('formWrapper').classList.add('hidden');
@@ -1113,12 +1116,14 @@
             confetti({particleCount: 100, spread: 70, origin: {y: 0.6}});
           }
 
-          const digits = normalizedWA.replace(/\D/g, '');
-          const link = `${BASE_URL}/?ref=${digits}`;
+          const link = `${BASE_URL}/?ref=${username}`;
           document.getElementById('referralLinkDisplay').innerText = link;
+          
+          // Set verification message
+          document.getElementById('verificationMessage').innerText = `VERIFY ${username}`;
 
           document.getElementById('verifyBtn').onclick = () => {
-            window.open(`https://wa.me/${OWNER_NUMBER}?text=VERIFY%20${digits}`, '_blank');
+            window.open(`https://wa.me/${OWNER_NUMBER}?text=VERIFY%20${username}`, '_blank');
           };
 
           document.getElementById('copyLinkBtn').onclick = () => {
