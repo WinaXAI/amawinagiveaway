@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>AmaWina · Real Referral Giveaway</title>
+  <style>
+    /* ---------- COMPLETE CSS (unchanged) ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0a1a2b;
+      color: #ffffff;
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .floating-gift {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.15;
+      animation: floatUp 18s infinite linear;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 215, 0, 0.5);
+      border-radius: 50%;
+      box-shadow: 0 0 15px 4px #ffd966;
+      animation: sparkleDrift 14s infinite ease-in-out;
+    }
+
+    .glow-light {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: glowPulse 8s infinite alternate;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(110vh) rotate(0deg); opacity: 0.1; }
+      100% { transform: translateY(-20vh) rotate(20deg); opacity: 0.25; }
+    }
+    @keyframes sparkleDrift {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+      100% { transform: translate(80px, -160px) scale(1); opacity: 0.1; }
+    }
+    @keyframes glowPulse {
+      0% { opacity: 0.1; transform: scale(1); }
+      100% { opacity: 0.3; transform: scale(1.3); }
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.2rem 1rem 3rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .card {
+      background: rgba(10, 30, 45, 0.85);
+      backdrop-filter: blur(4px);
+      border-radius: 2.5rem;
+      padding: 2rem 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      box-shadow: 0 25px 40px -12px #000000cc;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      background: linear-gradient(135deg, #ffffff 0%, #d4af37 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 1.4rem;
+      color: #d4af37;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .gold { color: #d4af37; }
+    .emerald { color: #2ecc71; }
+
+    .channel-buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    
+    .channel-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1.2rem 0.5rem;
+      border-radius: 60px;
+      font-size: clamp(1rem, 5vw, 1.3rem);
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+      border: 2px solid;
+      animation: vibrate 0.5s infinite;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      width: 100%;
+    }
+    
+    .channel-amawina { background: linear-gradient(145deg, #d4af37, #b38f2c); color: #0a1a2b; border-color: #f5d654; }
+    .channel-winaX { background: linear-gradient(145deg, #2ecc71, #1e8b4c); color: #0a1a2b; border-color: #6ef0a0; }
+    
+    @keyframes vibrate {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+    
+    .channel-btn:hover { animation: none; transform: scale(1.02); }
+
+    .progress-card {
+      background: #1a2c3b;
+      border-radius: 2rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .progress-bar-bg {
+      width: 100%;
+      height: 24px;
+      background: #2a4055;
+      border-radius: 60px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d4af37, #f5d654);
+      width: 0%;
+      transition: width 0.5s ease;
+      border-radius: 60px;
+    }
+    
+    .badge-qualified {
+      background: #2ecc71;
+      color: #0a1a2b;
+      padding: 0.4rem 1.2rem;
+      border-radius: 60px;
+      display: inline-block;
+      font-weight: 600;
+      margin-top: 0.8rem;
+    }
+
+    .leaderboard-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1rem 1.2rem;
+      border-radius: 60px;
+      margin-bottom: 0.5rem;
+      transition: all 0.3s ease;
+      animation: fadeInRow 0.5s ease;
+      flex-wrap: wrap;
+    }
+    
+    @keyframes fadeInRow { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+    
+    .rank-1 { background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 25px #d4af37, inset 0 0 15px rgba(212,175,55,0.3); border: 1px solid #d4af37; }
+    .rank-2 { background: rgba(192, 192, 192, 0.15); box-shadow: 0 0 25px #c0c0c0, inset 0 0 15px rgba(192,192,192,0.3); border: 1px solid #c0c0c0; }
+    .rank-3 { background: rgba(205, 127, 50, 0.15); box-shadow: 0 0 25px #cd7f32, inset 0 0 15px rgba(205,127,50,0.3); border: 1px solid #cd7f32; }
+    
+    .leaderboard-rank { background: #d4af37; color: #0a1a2b; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 800; flex-shrink: 0; }
+    .leaderboard-info { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+    .leaderboard-name { font-weight: 600; }
+    .leaderboard-number { font-family: monospace; background: #1e3a4b; padding: 0.2rem 1rem; border-radius: 60px; }
+    .leaderboard-invites { background: #2ecc71; color: #0a1a2b; padding: 0.2rem 1rem; border-radius: 60px; font-weight: 600; }
+    .prize-tag { background: #d4af37; color: #0a1a2b; padding: 0.2rem 1rem; border-radius: 60px; font-weight: 600; }
+
+    .winner-item {
+      background: #1a2c3b;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      border-left: 5px solid #d4af37;
+    }
+
+    .countdown-panel {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .countdown-block {
+      background: #0f2637;
+      border-radius: 1.5rem;
+      padding: 1rem 0.3rem;
+      flex: 1 1 70px;
+      text-align: center;
+      border: 1px solid #2ecc71;
+    }
+    
+    .countdown-number { font-size: clamp(1.5rem, 6vw, 2.2rem); font-weight: 800; color: #2ecc71; text-shadow: 0 0 12px #2ecc71; }
+
+    .namibia-clock {
+      background: #1e3a4b;
+      border-radius: 60px;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group { margin-bottom: 1.5rem; }
+    input { width: 100%; padding: 1.2rem 1.5rem; background: #1e3a4b; border: 1px solid #5f7f95; border-radius: 60px; color: white; font-size: 1rem; }
+    input:focus { outline: 2px solid #d4af37; }
+
+    .btn-primary { background: linear-gradient(145deg, #d4af37, #b38f2c); color: #0a1a2b; font-weight: 700; border: none; padding: 1rem 2rem; border-radius: 60px; font-size: 1.1rem; cursor: pointer; width: 100%; }
+    .btn-outline { background: transparent; border: 2px solid #d4af37; color: #d4af37; font-weight: 600; padding: 0.8rem 1.5rem; border-radius: 60px; cursor: pointer; }
+
+    .popup-celebration {
+      background: rgba(10, 30, 45, 0.95);
+      backdrop-filter: blur(10px);
+      border: 2px solid #d4af37;
+      border-radius: 3rem;
+      padding: 2rem;
+      text-align: center;
+      animation: popIn 0.5s;
+    }
+    
+    @keyframes popIn { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+    .ref-box { background: #1e3a4b; border-radius: 60px; padding: 1rem; border: 1px solid #d4af37; word-break: break-all; }
+    .hidden { display: none !important; }
+    
+    /* ===== FIXED EXPANDABLE CARDS - FULL CONTENT ALWAYS VISIBLE ===== */
+    .expandable {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .expandable .expand-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: max-height;
+    }
+
+    .expandable.open .expand-content {
+      max-height: 2000px;
+      overflow: visible;
+    }
+
+    .expand-content p {
+      margin-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .expand-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .expand-content ul {
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+    }
+
+    .expand-content li {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      .expandable.open .expand-content {
+        max-height: 2500px;
+      }
+      
+      .expand-content p {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+      
+      .expand-content ul {
+        padding-left: 1.2rem;
+      }
+      
+      .card {
+        padding: 1.5rem 1rem;
+      }
+      
+      .channel-btn {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-animation">
+    <div class="floating-gift" style="left:5%;">🎁</div>
+    <div class="floating-gift" style="left:20%;">🎀</div>
+    <div class="floating-gift" style="left:45%;">🎄</div>
+    <div class="floating-gift" style="left:75%;">🎁</div>
+    <div class="sparkle" style="top:20%; left:10%;"></div>
+    <div class="sparkle" style="top:50%; left:80%;"></div>
+    <div class="glow-light" style="top:10%; left:-50px;"></div>
+  </div>
+
+  <div class="container">
+    <h1>AmaWina Global Referral Giveaway</h1>
+    <div class="subtitle">Invite Friends. Win Cash Rewards.</div>
+
+    <!-- Namibia Clock -->
+    <div class="namibia-clock" id="namibiaClock">Loading Namibia time...</div>
+
+    <!-- How It Works -->
+    <div class="card">
+      <h2 class="gold">📋 How It Works</h2>
+      <div class="channel-buttons-container">
+        <a href="https://whatsapp.com/channel/0029Vb6gOkfFSAt4J8eU7n1N" target="_blank" class="channel-btn channel-amawina">📢 JOIN AMAWINA CHANNEL</a>
+        <a href="https://whatsapp.com/channel/0029Vb6h5Ch5a243QSc3xr1X" target="_blank" class="channel-btn channel-winaX">👥 JOIN WINAX CHANNEL</a>
+      </div>
+      <ol style="list-style-type: none; padding-left: 0;">
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">1.</span> <strong>Follow Both WhatsApp Channels</strong><br>Participants must follow the AmaWina WhatsApp Channel and the WinaX WhatsApp Channel to participate in the giveaway.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">2.</span> <strong>Register for the Giveaway</strong><br>Enter your name and WhatsApp number to receive your personal referral link.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">3.</span> <strong>Get Your Personal Referral Link</strong><br>After registering you will receive your unique referral link.<br>Example: <span class="gold">https://amawinagiveaway.netlify.app/?ref=0812345678</span></li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">4.</span> <strong>Invite Friends</strong><br>Share your referral link with friends. When they register using your link, the system records the referral automatically.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">5.</span> <strong>Friends Must Verify Their Entry</strong><br>After registering, each participant must verify their entry by sending the WhatsApp verification message.<br>Example message: <span class="gold">VERIFY 0812345678</span><br>The message must be sent exactly as provided.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">6.</span> <strong>Verified Referrals Count</strong><br>Only verified referrals are counted. Participants must invite a minimum of 10 verified referrals within the month to qualify for the monthly draw.</li>
+      </ol>
+    </div>
+
+    <!-- Progress Cards -->
+    <div class="card">
+      <h2 class="gold">📊 Your Monthly Progress</h2>
+      
+      <!-- Monthly Progress -->
+      <div class="progress-card">
+        <div class="progress-label">
+          <span class="gold">Monthly Qualification Progress</span>
+          <span id="monthlyCountDisplay">0 / 10 Verified Referrals</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-fill" id="monthlyProgressFill" style="width:0%;"></div>
+        </div>
+        <div id="monthlyMessage" style="margin-top:0.5rem;">10 verified referrals needed to qualify for this month's draw.</div>
+        <div id="qualifiedBadge" class="badge-qualified hidden">✅ You have qualified for this month's draw.</div>
+      </div>
+
+      <!-- Grand Prize Progress -->
+      <div class="progress-card">
+        <div class="progress-label">
+          <span class="gold">Grand Prize Competition</span>
+          <span id="lifetimeCountDisplay">0 Lifetime Verified Referrals</span>
+        </div>
+        <p style="margin-top:0.3rem;">You are competing for N$12,000 Grand Prize when the AmaWina channel reaches 50,000 followers.</p>
+      </div>
+    </div>
+
+    <!-- Monthly Giveaway -->
+    <div class="card">
+      <h2 class="gold">📆 Monthly Cash Giveaway (N$3000)</h2>
+      <p>10 verified referrals/month qualify. Draw on the 5th.</p>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; margin:1rem 0;">
+        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$1500</span><br>🥇 1st</div>
+        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$1000</span><br>🥈 2nd</div>
+        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$500</span><br>🥉 3rd</div>
+      </div>
+
+      <h3 class="emerald">⏳ Next Monthly Draw</h3>
+      <div class="countdown-panel">
+        <div class="countdown-block"><span class="countdown-number" id="days">00</span><br>Days</div>
+        <div class="countdown-block"><span class="countdown-number" id="hours">00</span><br>Hours</div>
+        <div class="countdown-block"><span class="countdown-number" id="minutes">00</span><br>Mins</div>
+        <div class="countdown-block"><span class="countdown-number" id="seconds">00</span><br>Secs</div>
+      </div>
+    </div>
+
+    <!-- Winners Display -->
+    <div class="card">
+      <h2 class="gold">🏅 Latest Monthly Winners</h2>
+      <div id="winnersContainer">
+        <p style="text-align:center; color:#d4af37;">Winners will be announced after each monthly draw</p>
+      </div>
+      <p style="font-size:0.9rem; margin-top:0.8rem;">The monthly winners are randomly selected automatically by the system using verified participant data. AmaWina does not manually choose the winners. After the automatic selection, each winner will be manually verified to confirm that they followed the giveaway requirements before prizes are awarded.</p>
+    </div>
+
+    <!-- Grand Prize + Leaderboard -->
+    <div class="card">
+      <h2 class="gold">🏆 Grand Prize (N$12,000)</h2>
+      <p>When AmaWina reaches 50k followers:</p>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin:1rem 0;">
+        <span><span class="gold">🥇</span> N$6000</span> 
+        <span><span class="gold">🥈</span> N$4000</span> 
+        <span><span class="gold">🥉</span> N$2000</span>
+      </div>
+      
+      <h3 class="gold">📊 Top Verified Referrers</h3>
+      <div id="leaderboard-container">
+        <p style="text-align:center; color:#d4af37;">Loading leaderboard...</p>
+      </div>
+      <p style="font-size:0.8rem;">Leaderboard updates automatically every 60 seconds from real verification data.</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="card" id="registerCard">
+      <h2 class="gold">📝 Register Now</h2>
+      <div style="background:#d4af3722; border-radius:60px; padding:1rem; margin-bottom:1rem; text-align:center;">⚡ Join both channels above first!</div>
+      <div id="errorMsg" style="background:#6d2e2e; border-radius:60px; padding:0.8rem; margin-bottom:1rem; display:none;"></div>
+      
+      <div id="formWrapper">
+        <form id="registerForm">
+          <input type="hidden" id="invitedBy" name="invitedBy" value="">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="fullName" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label>WhatsApp Number (Namibia)</label>
+            <input type="tel" id="whatsapp" placeholder="0812345678" required>
+          </div>
+          <button type="submit" class="btn-primary">✔️ Register & Get Referral Link</button>
+        </form>
+      </div>
+
+      <!-- Celebration Popup -->
+      <div id="celebrationPopup" class="popup-celebration hidden">
+        <div style="font-size:3rem;">🎉🎁✨</div>
+        <h2 class="gold">Entry Submitted Successfully!</h2>
+        <p>✅ WhatsApp verification required</p>
+        <button class="btn-primary" id="verifyBtn" style="margin:1rem 0;">📲 Verify on WhatsApp</button>
+        <hr>
+        <p class="gold">Your Referral Link</p>
+        <div class="ref-box" id="referralLinkDisplay">https://amawinagiveaway.netlify.app/?ref=...</div>
+        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+          <button class="btn-outline" id="copyLinkBtn">📋 Copy</button>
+          <button class="btn-outline" id="shareBtn">💬 Share</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Contact -->
+    <div class="card">
+      <h2 class="gold">💾 Save AmaWina WhatsApp Contact</h2>
+      <p>Save the AmaWina WhatsApp number to receive important giveaway updates, announcements and bonus opportunities. Participants who save the contact will also be able to see important updates shared on AmaWina WhatsApp Status.</p>
+      <p style="font-size:2.5rem; font-weight:700; color:#d4af37; margin:1rem 0;">+264858037092</p>
+      <button class="btn-outline" id="saveContactBtn">📱 Save AmaWina Contact</button>
+    </div>
+
+    <!-- ===== FULL ABOUT AMAWINA & WINAX SECTION ===== -->
+    <div class="card expandable" id="aboutCard">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="gold">📘 About AmaWina & WinaX</h2>
+        <span class="expand-icon" style="font-size:1.5rem;">▼</span>
+      </div>
+      <div class="expand-content">
+        <p style="margin-top:1rem;">AmaWina is a premium clothing brand created to represent ambition, identity and the mindset of champions. The brand is built around the philosophy "Where Champions Rise", encouraging individuals to pursue excellence, confidence and success in their daily lives.</p>
+        <p style="margin-top:1rem;">AmaWina designs are inspired by modern streetwear culture combined with a strong message of resilience, self belief and forward thinking.</p>
+        <p style="margin-top:1rem;">The brand represents individuals who refuse to settle for mediocrity and instead pursue growth, discipline and success.</p>
+        <p style="margin-top:1rem;">WinaX is a forex trading and financial education entity focused on helping traders understand financial markets through structured learning, discipline and proper risk management.</p>
+        <p style="margin-top:1rem;">WinaX shares trading insights, market education and opportunities for traders who want to improve their skills in forex trading and financial markets.</p>
+        <p style="margin-top:1rem;">Both AmaWina and WinaX are founded by Robin Banks, a Namibian entrepreneur and forex trader with more than 10 years of experience studying and trading financial markets.</p>
+        <p style="margin-top:1rem;">Through AmaWina and WinaX, the mission is to build a community of ambitious individuals who believe in growth, financial education and long term success.</p>
+      </div>
+    </div>
+
+    <!-- ===== FULL TERMS AND CONDITIONS ===== -->
+    <div class="card expandable" id="termsCard">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="gold">📜 Terms & Conditions</h2>
+        <span class="expand-icon" style="font-size:1.5rem;">▼</span>
+      </div>
+      <div class="expand-content">
+        <ul style="margin-left:1.2rem; margin-top:1rem; list-style-type: disc;">
+          <li>Participants must follow both the AmaWina WhatsApp Channel and the WinaX WhatsApp Channel to participate.</li>
+          <li>Participants must register using a valid WhatsApp number.</li>
+          <li>After registering, participants must verify their entry by sending the WhatsApp verification message.</li>
+          <li>Only verified participants are counted in the referral system.</li>
+          <li>A minimum of 10 verified referrals within a month is required to qualify for the monthly giveaway draw.</li>
+          <li>The monthly giveaway winners are selected randomly by the system from qualified participants.</li>
+          <li>The monthly draw takes place automatically on the 5th of every month.</li>
+          <li>The AmaWina Grand Prize Giveaway totals N$12,000 and will be awarded when the AmaWina WhatsApp Channel reaches 50,000 followers.</li>
+        </ul>
+        <div style="margin:0.5rem 0 1rem 1.2rem;">
+          <p><span class="gold">Grand Prize structure:</span><br>
+          1st Place – N$6000<br>
+          2nd Place – N$4000<br>
+          3rd Place – N$2000</p>
+        </div>
+        <ul style="margin-left:1.2rem; list-style-type: disc;">
+          <li>Only verified referrals count toward the Grand Prize leaderboard.</li>
+          <li>AmaWina reserves the right to review referral activity and disqualify participants involved in fraudulent or suspicious activity.</li>
+          <li>Fake numbers, automated registrations or manipulation of the referral system will lead to immediate disqualification.</li>
+          <li>This giveaway promotion is not affiliated with WhatsApp.</li>
+          <li>AmaWina may update the rules if necessary to maintain fairness and transparency.</li>
+        </ul>
+        <p style="margin-top:1rem;">Support contact:<br>
+        WhatsApp: +264858037092<br>
+        Email: amawinaofficial@gmail.com</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+  <script>
+    (function() {
+      // ---------- CONFIGURATION ----------
+      const OWNER_NUMBER = '264858037092';
+      const BASE_URL = 'https://amawinagiveaway.netlify.app';
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztqdjzPHHApGJRnAkLWsTP5zlETGMqvHfUVUMYW1NgLAw64KxuB-Mc9f0iAdt0eKo/exec';
+
+      // ---------- USER IDENTIFICATION ----------
+      const currentUserWA = localStorage.getItem('amawina_user_wa');
+      
+      // ---------- GLOBAL DATA STORAGE ----------
+      let allReferrals = []; // Will store all rows from Google Sheets
+      let currentUserMonthly = 0;
+      let currentUserLifetime = 0;
+
+      // ---------- HELPER FUNCTIONS ----------
+      function maskNumber(num) {
+        const cleaned = num.replace(/\D/g, '');
+        if (cleaned.length < 7) return num;
+        return cleaned.slice(0,3) + '***' + cleaned.slice(-4);
+      }
+
+      function isValidNamibian(num) {
+        const c = num.replace(/\s+/g, '');
+        return /^081\d{7}$/.test(c) || /^085\d{7}$/.test(c) || 
+               /^\+26481\d{7}$/.test(c) || /^\+26485\d{7}$/.test(c);
+      }
+
+      // ---------- NAMIBIA TIME ----------
+      function getNamibiaTime() {
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        return new Date(utc + (2 * 3600000));
+      }
+
+      function updateClock() {
+        const d = getNamibiaTime();
+        document.getElementById('namibiaClock').innerText = 
+          d.toLocaleDateString('en-GB') + ' ' + d.toTimeString().split(' ')[0] + ' WAT';
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // ---------- COUNTDOWN TO 5TH ----------
+      function getNextDrawDate() {
+        const now = getNamibiaTime();
+        let draw = new Date(now);
+        draw.setDate(5);
+        draw.setHours(0,0,0,0);
+        if (now > draw) {
+          draw.setMonth(draw.getMonth() + 1);
+          draw.setDate(5);
+        }
+        return draw;
+      }
+
+      function updateCountdown() {
+        const now = getNamibiaTime();
+        const draw = getNextDrawDate();
+        const diff = draw - now;
+        if (diff <= 0) return;
+        document.getElementById('days').innerText = Math.floor(diff/86400000).toString().padStart(2,'0');
+        document.getElementById('hours').innerText = Math.floor((diff/3600000)%24).toString().padStart(2,'0');
+        document.getElementById('minutes').innerText = Math.floor((diff/60000)%60).toString().padStart(2,'0');
+        document.getElementById('seconds').innerText = Math.floor((diff/1000)%60).toString().padStart(2,'0');
+      }
+      setInterval(updateCountdown,1000);
+      updateCountdown();
+
+      // ---------- FETCH ALL REFERRAL DATA FROM GOOGLE SHEETS ----------
+      async function fetchReferralData() {
+        try {
+          const response = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+          const data = await response.json();
+          
+          if (data.success && data.rows) {
+            allReferrals = data.rows;
+            
+            // Process data for current user if logged in
+            if (currentUserWA) {
+              calculateUserReferrals(currentUserWA);
+            }
+            
+            // Update leaderboard
+            calculateLeaderboard();
+            
+            console.log('Data refreshed:', new Date().toLocaleTimeString());
+          }
+        } catch (error) {
+          console.error('Error fetching referral data:', error);
+        }
+      }
+
+      // ---------- CALCULATE USER REFERRAL COUNTS ----------
+      function calculateUserReferrals(userWA) {
+        const now = getNamibiaTime();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        
+        let monthlyCount = 0;
+        let lifetimeCount = 0;
+        
+        allReferrals.forEach(row => {
+          // Check if this row is a verified referral for the current user
+          if (row.invitedBy === userWA && row.verified === 'YES') {
+            lifetimeCount++;
+            
+            // Check if referral happened this month
+            const referralDate = new Date(row.timestamp);
+            if (referralDate.getMonth() === currentMonth && 
+                referralDate.getFullYear() === currentYear) {
+              monthlyCount++;
+            }
+          }
+        });
+        
+        currentUserMonthly = monthlyCount;
+        currentUserLifetime = lifetimeCount;
+        
+        // Update UI
+        updateProgressBars(monthlyCount, lifetimeCount);
+      }
+
+      // ---------- UPDATE PROGRESS BARS ----------
+      function updateProgressBars(monthly, lifetime) {
+        document.getElementById('monthlyCountDisplay').innerText = `${monthly} / 10 Verified Referrals`;
+        const percent = Math.min(100, (monthly/10)*100);
+        document.getElementById('monthlyProgressFill').style.width = percent + '%';
+        document.getElementById('lifetimeCountDisplay').innerText = `${lifetime} Lifetime Verified Referrals`;
+
+        if (monthly >= 10) {
+          document.getElementById('monthlyMessage').innerHTML = 
+            `You have qualified for this month's draw. Additional referrals increase your chances of winning. (${monthly} verified)`;
+          document.getElementById('qualifiedBadge').classList.remove('hidden');
+        } else {
+          const needed = 10 - monthly;
+          document.getElementById('monthlyMessage').innerText = 
+            `${needed} more verified referrals needed to qualify for this month's draw.`;
+          document.getElementById('qualifiedBadge').classList.add('hidden');
+        }
+      }
+
+      // ---------- CALCULATE LEADERBOARD ----------
+      function calculateLeaderboard() {
+        // Create map of referrers and their verified counts
+        const referrerMap = new Map();
+        const nameMap = new Map(); // Store names by WhatsApp number
+        
+        allReferrals.forEach(row => {
+          // Store name for this WhatsApp number
+          if (row.whatsapp && row.name) {
+            nameMap.set(row.whatsapp, row.name);
+          }
+          
+          // Count verified referrals
+          if (row.invitedBy && row.verified === 'YES') {
+            const inviter = row.invitedBy;
+            referrerMap.set(inviter, (referrerMap.get(inviter) || 0) + 1);
+          }
+        });
+        
+        // Convert to array and sort
+        const leaderboardArray = [];
+        referrerMap.forEach((count, wa) => {
+          leaderboardArray.push({
+            wa: wa,
+            name: nameMap.get(wa) || 'Anonymous',
+            count: count
+          });
+        });
+        
+        // Sort descending by count
+        leaderboardArray.sort((a, b) => b.count - a.count);
+        
+        // Take top 6
+        const topSix = leaderboardArray.slice(0, 6);
+        renderLeaderboard(topSix);
+      }
+
+      // ---------- RENDER LEADERBOARD ----------
+      function renderLeaderboard(leaderboardData) {
+        if (!leaderboardData || leaderboardData.length === 0) {
+          document.getElementById('leaderboard-container').innerHTML = 
+            '<p style="text-align:center; color:#d4af37;">No verified referrals yet</p>';
+          return;
+        }
+
+        let html = '';
+        leaderboardData.forEach((entry, idx) => {
+          const rank = idx + 1;
+          let rankClass = '';
+          if (rank === 1) rankClass = 'rank-1';
+          else if (rank === 2) rankClass = 'rank-2';
+          else if (rank === 3) rankClass = 'rank-3';
+          
+          let prize = '';
+          if (rank === 1) prize = 'N$6000';
+          else if (rank === 2) prize = 'N$4000';
+          else if (rank === 3) prize = 'N$2000';
+
+          const displayName = entry.name || 'Anonymous';
+          const maskedWA = maskNumber(entry.wa);
+
+          html += `<div class="leaderboard-row ${rankClass}">
+            <span class="leaderboard-rank">${rank}</span>
+            <div class="leaderboard-info">
+              <span class="leaderboard-name">${displayName}</span>
+              <span class="leaderboard-number">${maskedWA}</span>
+              <span class="leaderboard-invites">${entry.count} verified</span>
+              ${prize ? '<span class="prize-tag">'+prize+'</span>' : ''}
+            </div>
+          </div>`;
+        });
+        
+        document.getElementById('leaderboard-container').innerHTML = html;
+      }
+
+      // ---------- CHECK FOR DUPLICATE REGISTRATION ----------
+      async function checkDuplicateWhatsApp(whatsapp) {
+        try {
+          const response = await fetch(APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(whatsapp));
+          const data = await response.json();
+          return data.exists;
+        } catch (error) {
+          console.error('Error checking duplicate:', error);
+          return false;
+        }
+      }
+
+      // ---------- INITIALIZE ----------
+      // Fetch data immediately and then every 60 seconds
+      fetchReferralData();
+      setInterval(fetchReferralData, 60000);
+
+      document.getElementById('invitedBy').value = new URLSearchParams(window.location.search).get('ref') || '';
+
+      // ---------- REGISTRATION FORM HANDLER (FIXED) ----------
+      document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errorDiv = document.getElementById('errorMsg');
+        errorDiv.style.display = 'none';
+
+        const name = document.getElementById('fullName').value.trim();
+        const wa = document.getElementById('whatsapp').value.trim();
+        const invited = document.getElementById('invitedBy').value.trim();
+
+        // Validation
+        if (!name) { 
+          errorDiv.innerText = 'Please enter your full name'; 
+          errorDiv.style.display = 'block'; 
+          return; 
+        }
+        
+        if (!isValidNamibian(wa)) { 
+          errorDiv.innerText = 'Please enter a valid Namibian number'; 
+          errorDiv.style.display = 'block'; 
+          return; 
+        }
+        
+        // Self-referral prevention
+        if (invited && wa.replace(/\D/g,'') === invited.replace(/\D/g,'')) {
+          errorDiv.innerText = 'You cannot refer yourself'; 
+          errorDiv.style.display = 'block'; 
+          return;
+        }
+
+        // Check for duplicate registration
+        const isDuplicate = await checkDuplicateWhatsApp(wa);
+        if (isDuplicate) {
+          errorDiv.innerText = 'This WhatsApp number has already been registered'; 
+          errorDiv.style.display = 'block'; 
+          return;
+        }
+
+        try {
+          // Send registration data to Google Sheets
+          const payload = {
+            name: name,
+            whatsapp: wa,
+            invitedBy: invited || ''
+          };
+
+          // Using no-cors mode, but we'll still fire and forget
+          await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          // Store user data in localStorage
+          localStorage.setItem('amawina_user_wa', wa);
+          localStorage.setItem('amawina_user_name', name);
+
+          // Show celebration
+          document.getElementById('formWrapper').classList.add('hidden');
+          document.getElementById('celebrationPopup').classList.remove('hidden');
+          
+          if (window.confetti) {
+            confetti({particleCount: 100, spread: 70, origin: {y: 0.6}});
+          }
+
+          // Generate and display referral link
+          const digits = wa.replace(/\D/g, '');
+          const link = `${BASE_URL}/?ref=${digits}`;
+          document.getElementById('referralLinkDisplay').innerText = link;
+
+          // Set up verification button
+          document.getElementById('verifyBtn').onclick = () => {
+            window.open(`https://wa.me/${OWNER_NUMBER}?text=VERIFY%20${digits}`, '_blank');
+          };
+
+          // Set up copy button
+          document.getElementById('copyLinkBtn').onclick = () => {
+            navigator.clipboard.writeText(link);
+            alert('✅ Referral link copied!');
+          };
+
+          // Set up share button
+          document.getElementById('shareBtn').onclick = () => {
+            const message = `Join AmaWina Giveaway and win cash rewards! Use my referral link: ${link}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+          };
+
+          // Refresh data
+          setTimeout(() => {
+            fetchReferralData();
+          }, 2000);
+
+        } catch (error) {
+          errorDiv.innerText = 'Registration failed. Please try again.';
+          errorDiv.style.display = 'block';
+        }
+      });
+
+      // ---------- SAVE CONTACT BUTTON ----------
+      document.getElementById('saveContactBtn').addEventListener('click', () => {
+        const vcf = `BEGIN:VCARD
+VERSION:3.0
+FN:AmaWina Official
+TEL;TYPE=CELL:+264858037092
+END:VCARD`;
+        const blob = new Blob([vcf], {type: 'text/vcard'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'amawina-contact.vcf';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // ---------- FIXED EXPANDABLE CARDS ----------
+      document.querySelectorAll('.expandable').forEach(card => {
+        card.addEventListener('click', function() {
+          this.classList.toggle('open');
+          const icon = this.querySelector('.expand-icon');
+          if (icon) {
+            icon.innerText = this.classList.contains('open') ? '▲' : '▼';
+          }
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>
