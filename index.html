@@ -309,6 +309,55 @@
       margin-bottom: 1rem;
     }
     
+    /* Register link */
+    .register-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    
+    .register-link a {
+      color: #d4af37;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .register-link a:hover {
+      color: #f5d654;
+    }
+    
+    /* Format hint */
+    .format-hint {
+      font-size: 0.85rem;
+      color: #b9ae9e;
+      margin-top: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .format-hint span {
+      color: #d4af37;
+      font-weight: 600;
+    }
+    
+    /* Channel reminder button */
+    .channel-reminder-btn {
+      background: transparent;
+      border: 2px solid #d4af37;
+      color: #d4af37;
+      font-weight: 600;
+      padding: 0.8rem 1.5rem;
+      border-radius: 60px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .channel-reminder-btn:hover {
+      background: #d4af37;
+      color: #0a1a2b;
+    }
+    
     /* ===== FIXED EXPANDABLE CARDS - FULL CONTENT ALWAYS VISIBLE ===== */
     .expandable {
       cursor: pointer;
@@ -399,8 +448,8 @@
 
     <!-- How It Works -->
     <div class="card">
-      <h2 class="gold">📋 How It Works</h2>
-      <div class="channel-buttons-container">
+      <h2 class="gold" id="howItWorks">📋 How It Works</h2>
+      <div class="channel-buttons-container" id="channelButtons">
         <a href="https://whatsapp.com/channel/0029Vb6gOkfFSAt4J8eU7n1N" target="_blank" class="channel-btn channel-amawina">📢 JOIN AMAWINA CHANNEL</a>
         <a href="https://whatsapp.com/channel/0029Vb6h5Ch5a243QSc3xr1X" target="_blank" class="channel-btn channel-winaX">👥 JOIN WINAX CHANNEL</a>
       </div>
@@ -418,13 +467,20 @@
     <!-- Login Section -->
     <div class="card" id="loginSection">
       <h2 class="gold">🔐 Login to Your Account</h2>
-      <div id="loginError" class="error-msg" style="background:#6d2e2e; border-radius:60px; padding:0.8rem; margin-bottom:1rem; display:none;"></div>
+      <div id="loginError" style="background:#6d2e2e; border-radius:60px; padding:0.8rem; margin-bottom:1rem; display:none;"></div>
       
       <div id="loginFormContainer">
         <div class="login-row">
           <input type="text" id="loginUsername" placeholder="Username (e.g., Felly005)" required>
           <input type="tel" id="loginWhatsapp" placeholder="WhatsApp Number" required>
           <button class="btn-primary" id="loginBtn">Login</button>
+        </div>
+        <div class="format-hint">
+          <span>📱 Format:</span> 264812345678 (MTC) or 264851234567 (TN)<br>
+          You can also use 081..., 085..., or +264...
+        </div>
+        <div class="register-link">
+          <a id="registerLink">Don't have an account yet? Register now</a>
         </div>
       </div>
       
@@ -508,8 +564,13 @@
 
     <!-- Registration Form -->
     <div class="card" id="registerCard">
-      <h2 class="gold">📝 Register Now</h2>
-      <div style="background:#d4af3722; border-radius:60px; padding:1rem; margin-bottom:1rem; text-align:center;">⚡ Join both channels above first!</div>
+      <h2 class="gold" id="registerSection">📝 Register Now</h2>
+      
+      <!-- Channel reminder button -->
+      <button class="channel-reminder-btn" id="channelReminderBtn">
+        ⚡ Join both channels above first! Click to scroll up ⚡
+      </button>
+      
       <div id="errorMsg" style="background:#6d2e2e; border-radius:60px; padding:0.8rem; margin-bottom:1rem; display:none;"></div>
       
       <div id="formWrapper">
@@ -522,6 +583,10 @@
           <div class="form-group">
             <label>WhatsApp Number (Namibia)</label>
             <input type="tel" id="whatsapp" placeholder="0812345678 or +264812345678" required>
+            <div class="format-hint">
+              <span>📱 Format:</span> 264812345678 (MTC) or 264851234567 (TN)<br>
+              You can also use 081..., 085..., or +264...
+            </div>
           </div>
           <button type="submit" class="btn-primary">✔️ Register & Get Referral Link</button>
         </form>
@@ -622,29 +687,77 @@
       let allReferrals = [];
       let monthlyWinners = [];
 
+      // ---------- IP TRACKING STORAGE ----------
+      // In a real implementation, this would be stored in Google Sheets
+      // For now, we'll use localStorage as a temporary solution
+      let ipRecords = JSON.parse(localStorage.getItem('amawina_ip_records')) || [];
+
       // ---------- HELPER FUNCTIONS ----------
       function maskNumber(num) {
         const cleaned = num.toString().replace(/\D/g, '');
-        if (cleaned.length < 7) return num;
+        if (cleaned.length < 9) return num;
         
-        // Mask only 2 digits in the middle: 0815562858 -> 08155**858
-        const start = cleaned.slice(0, 5);
+        // Format: 264815562858 -> 264812**678
+        // Keep first 6 digits, hide 2, show last 3
+        const start = cleaned.slice(0, 6);
         const end = cleaned.slice(-3);
         return start + '**' + end;
       }
 
       function isValidNamibian(num) {
         const c = num.replace(/\s+/g, '');
-        // Support 081xxxxxxx, 085xxxxxxx, +26481xxxxxxx, +26485xxxxxxx
+        // Support 081xxxxxxx, 085xxxxxxx, +26481xxxxxxx, +26485xxxxxxx, 26481xxxxxxx, 26485xxxxxxx
         return /^081\d{7}$/.test(c) || /^085\d{7}$/.test(c) || 
-               /^\+26481\d{7}$/.test(c) || /^\+26485\d{7}$/.test(c);
+               /^\+26481\d{7}$/.test(c) || /^\+26485\d{7}$/.test(c) ||
+               /^26481\d{7}$/.test(c) || /^26485\d{7}$/.test(c);
       }
 
       function normalizeNumber(num) {
         const cleaned = num.replace(/\s+/g, '');
-        if (cleaned.startsWith('081')) return '+264' + cleaned.slice(1);
-        if (cleaned.startsWith('085')) return '+264' + cleaned.slice(1);
-        return cleaned; // Already +264 format
+        if (cleaned.startsWith('081')) return '264' + cleaned.slice(1);
+        if (cleaned.startsWith('085')) return '264' + cleaned.slice(1);
+        if (cleaned.startsWith('+26481')) return '264' + cleaned.slice(5);
+        if (cleaned.startsWith('+26485')) return '264' + cleaned.slice(5);
+        if (cleaned.startsWith('26481') && cleaned.length === 12) return cleaned;
+        if (cleaned.startsWith('26485') && cleaned.length === 12) return cleaned;
+        return cleaned; // Already normalized
+      }
+
+      // ---------- GET USER IP ADDRESS (via Cloudflare headers or public API) ----------
+      async function getUserIP() {
+        try {
+          // Try to get IP from Cloudflare headers first
+          const response = await fetch('https://api.ipify.org?format=json');
+          const data = await response.json();
+          return data.ip;
+        } catch (error) {
+          console.error('Error getting IP:', error);
+          return 'unknown';
+        }
+      }
+
+      // ---------- CHECK IP REGISTRATION LIMITS ----------
+      async function checkIPLimit() {
+        const userIP = await getUserIP();
+        
+        // Filter records from this IP in the last 7 days
+        const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+        
+        const recentFromThisIP = ipRecords.filter(record => 
+          record.ip === userIP && record.timestamp > oneWeekAgo
+        );
+        
+        const todayFromThisIP = ipRecords.filter(record => 
+          record.ip === userIP && record.timestamp > oneDayAgo
+        );
+        
+        return {
+          canRegister: recentFromThisIP.length < 3 && todayFromThisIP.length === 0,
+          totalThisWeek: recentFromThisIP.length,
+          totalToday: todayFromThisIP.length,
+          ip: userIP
+        };
       }
 
       // ---------- NAMIBIA TIME ----------
@@ -687,6 +800,15 @@
       }
       setInterval(updateCountdown,1000);
       updateCountdown();
+
+      // ---------- SCROLL FUNCTIONS ----------
+      function scrollToRegister() {
+        document.getElementById('registerCard').scrollIntoView({ behavior: 'smooth' });
+      }
+      
+      function scrollToChannels() {
+        document.getElementById('howItWorks').scrollIntoView({ behavior: 'smooth' });
+      }
 
       // ---------- FETCH DATA ----------
       async function fetchReferralData() {
@@ -736,8 +858,8 @@
       function performMonthlyDraw() {
         // Get previous month (since we're at 5th of new month)
         const now = getNamibiaTime();
-        const drawMonth = now.getMonth() - 1; // Previous month
-        const drawYear = now.getFullYear();
+        let drawMonth = now.getMonth() - 1; // Previous month
+        let drawYear = now.getFullYear();
         if (drawMonth < 0) {
           drawMonth = 11;
           drawYear--;
@@ -798,7 +920,9 @@
         
         winners.forEach((winner, idx) => {
           const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
-          const maskedWA = maskNumber(winner.wa);
+          // Find WhatsApp number for this username
+          const userRow = allReferrals.find(row => row.name === winner.name);
+          const maskedWA = userRow ? maskNumber(userRow.whatsapp) : 'Unknown';
           
           html += `<div class="winner-item">
             ${medal} ${idx + 1} Place<br>
@@ -812,9 +936,15 @@
       }
 
       // ---------- CHECK IF USERNAME EXISTS ----------
-      async function checkUsernameExists(username) {
+      function checkUsernameExists(username) {
         // Search through allReferrals
         return allReferrals.some(row => row.name === username);
+      }
+
+      // ---------- CHECK IF WHATSAPP EXISTS ----------
+      function checkWhatsAppExists(whatsapp) {
+        const normalizedWA = normalizeNumber(whatsapp);
+        return allReferrals.some(row => row.whatsapp.toString() === normalizedWA);
       }
 
       // ---------- CALCULATE USER REFERRAL COUNTS ----------
@@ -864,12 +994,8 @@
       // ---------- CALCULATE LEADERBOARD ----------
       function calculateLeaderboard() {
         const referrerMap = new Map();
-        const usernameMap = new Map();
         
         allReferrals.forEach(row => {
-          if (row.whatsapp && row.name) {
-            usernameMap.set(row.whatsapp.toString(), row.name);
-          }
           if (row.invitedBy && row.verified === 'YES') {
             const inviter = row.invitedBy.toString();
             referrerMap.set(inviter, (referrerMap.get(inviter) || 0) + 1);
@@ -880,7 +1006,6 @@
         referrerMap.forEach((count, username) => {
           leaderboardArray.push({
             username: username,
-            name: username, // Username is the name
             count: count
           });
         });
@@ -911,7 +1036,7 @@
           else if (rank === 2) prize = 'N$4000';
           else if (rank === 3) prize = 'N$2000';
 
-          const displayName = entry.username || 'Anonymous';
+          const displayName = entry.username;
           // Find WhatsApp number for this username
           const userRow = allReferrals.find(row => row.name === entry.username);
           const maskedWA = userRow ? maskNumber(userRow.whatsapp) : 'Unknown';
@@ -984,19 +1109,6 @@
         updateProgressBars(0, 0);
       }
 
-      // ---------- CHECK FOR DUPLICATE REGISTRATION ----------
-      async function checkDuplicateWhatsApp(whatsapp) {
-        try {
-          const normalizedWA = normalizeNumber(whatsapp);
-          const response = await fetch(APPS_SCRIPT_URL + '?action=checkDuplicate&wa=' + encodeURIComponent(normalizedWA) + '&t=' + Date.now());
-          const data = await response.json();
-          return data.exists;
-        } catch (error) {
-          console.error('Error checking duplicate:', error);
-          return false;
-        }
-      }
-
       // ---------- INITIALIZE ----------
       setTimeout(() => {
         fetchReferralData();
@@ -1023,6 +1135,12 @@
       // ---------- LOGOUT BUTTON HANDLER ----------
       document.getElementById('logoutBtn').addEventListener('click', logout);
 
+      // ---------- REGISTER LINK HANDLER ----------
+      document.getElementById('registerLink').addEventListener('click', scrollToRegister);
+
+      // ---------- CHANNEL REMINDER BUTTON HANDLER ----------
+      document.getElementById('channelReminderBtn').addEventListener('click', scrollToChannels);
+
       // ---------- CHECK IF USER IS ALREADY LOGGED IN ----------
       if (currentUserWA && currentUsername) {
         document.getElementById('loginFormContainer').classList.add('hidden');
@@ -1030,7 +1148,7 @@
         document.getElementById('welcomeUsername').innerText = currentUsername;
       }
 
-      // ---------- REGISTRATION FORM HANDLER ----------
+      // ---------- REGISTRATION FORM HANDLER (WITH IP LIMITS) ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
@@ -1054,7 +1172,7 @@
         }
         
         if (!isValidNamibian(wa)) { 
-          errorDiv.innerText = 'Please enter a valid Namibian number (081..., 085..., or +264...)'; 
+          errorDiv.innerText = 'Please enter a valid Namibian number (081..., 085..., 26481..., or +264...)'; 
           errorDiv.style.display = 'block'; 
           return; 
         }
@@ -1065,8 +1183,20 @@
           return;
         }
 
+        // Check IP limits first
+        const ipCheck = await checkIPLimit();
+        if (!ipCheck.canRegister) {
+          if (ipCheck.totalThisWeek >= 3) {
+            errorDiv.innerText = 'Maximum registration limit reached (3 per IP address). Please contact support if you believe this is an error.';
+          } else if (ipCheck.totalToday >= 1) {
+            errorDiv.innerText = 'You can only register once per day from this IP address. Please try again tomorrow.';
+          }
+          errorDiv.style.display = 'block'; 
+          return;
+        }
+
         // Check if username already exists
-        const usernameExists = await checkUsernameExists(username);
+        const usernameExists = checkUsernameExists(username);
         if (usernameExists) {
           errorDiv.innerText = `Username '${username}' is already taken. Please choose another one.`; 
           errorDiv.style.display = 'block'; 
@@ -1074,8 +1204,10 @@
         }
 
         const normalizedWA = normalizeNumber(wa);
-        const isDuplicate = await checkDuplicateWhatsApp(normalizedWA);
-        if (isDuplicate) {
+        
+        // Check if WhatsApp number already exists
+        const whatsappExists = checkWhatsAppExists(normalizedWA);
+        if (whatsappExists) {
           errorDiv.innerText = 'This WhatsApp number has already been registered'; 
           errorDiv.style.display = 'block'; 
           return;
@@ -1095,6 +1227,14 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
+
+          // Record this registration in IP tracking
+          ipRecords.push({
+            ip: ipCheck.ip,
+            timestamp: Date.now(),
+            username: username
+          });
+          localStorage.setItem('amawina_ip_records', JSON.stringify(ipRecords));
 
           // Store user data in localStorage and auto-login
           localStorage.setItem('amawina_user_wa', normalizedWA);
