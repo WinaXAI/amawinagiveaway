@@ -231,7 +231,7 @@
       font-weight: 700;
     }
 
-    /* Referral link card */
+    /* NEW: Referral link card */
     .referral-card {
       background: linear-gradient(145deg, #1a2c3b, #0f2637);
       border: 2px solid #d4af37;
@@ -588,26 +588,14 @@
       </div>
     </div>
 
-    <!-- Monthly Giveaway (UPDATED TEXT) -->
+    <!-- Monthly Giveaway -->
     <div class="card">
-      <h2 class="gold">📆 Monthly Cash Giveaway (N$3000 Total)</h2>
-      <div style="margin: 1rem 0;">
-        <p>· Qualification: 10+ verified referrals in the current month</p>
-        <p>· Selection: 🎲 RANDOM DRAW from all qualified participants</p>
-        <p>· NOT based on top referrers (everyone with 10+ has equal chance)</p>
-        <p>· Draw Date: 5th of every month at midnight (automatic)</p>
-        <p>· Prizes:</p>
-        <p style="margin-left: 1.5rem;">· 🥇 1st Prize: N$1500 (randomly selected)</p>
-        <p style="margin-left: 1.5rem;">· 🥈 2nd Prize: N$1000 (randomly selected)</p>
-        <p style="margin-left: 1.5rem;">· 🥉 3rd Prize: N$500 (randomly selected)</p>
-        <p>· Reset: Monthly progress resets to 0 after draw</p>
-      </div>
-      <div style="background: #0f2637; border-radius: 2rem; padding: 1.5rem; margin: 1rem 0;">
-        <p class="gold" style="font-weight: 700; margin-bottom: 0.5rem;">Example:</p>
-        <p>If 50 people reach 10+ verified referrals in March:</p>
-        <p>· All 50 names go into a virtual hat</p>
-        <p>· System randomly picks 3 winners</p>
-        <p>· Each has equal chance regardless of whether they had 10 or 100 referrals</p>
+      <h2 class="gold">📆 Monthly Cash Giveaway (N$3000)</h2>
+      <p>10 verified referrals/month qualify. Draw on the 5th.</p>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; margin:1rem 0;">
+        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$1500</span><br>🥇 1st</div>
+        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$1000</span><br>🥈 2nd</div>
+        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$500</span><br>🥉 3rd</div>
       </div>
 
       <h3 class="emerald">⏳ Next Monthly Draw</h3>
@@ -628,15 +616,14 @@
       <p style="font-size:0.9rem; margin-top:0.8rem;">The monthly winners are randomly selected automatically by the system using verified participant data. AmaWina does not manually choose the winners. After the automatic selection, each winner will be manually verified to confirm that they followed the giveaway requirements before prizes are awarded.</p>
     </div>
 
-    <!-- Grand Prize + Leaderboard (UPDATED TEXT) -->
+    <!-- Grand Prize + Leaderboard (NOW TOP 10) -->
     <div class="card">
-      <h2 class="gold">🏆 Grand Prize (N$12,000 Total)</h2>
-      <div style="margin: 1rem 0;">
-        <p>· Based on TOP referrers (lifetime verified counts)</p>
-        <p>· 1st Place – N$6000</p>
-        <p>· 2nd Place – N$4000</p>
-        <p>· 3rd Place – N$2000</p>
-        <p>· Never resets</p>
+      <h2 class="gold">🏆 Grand Prize (N$12,000)</h2>
+      <p>When AmaWina reaches 50k followers:</p>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin:1rem 0;">
+        <span><span class="gold">🥇</span> N$6000</span> 
+        <span><span class="gold">🥈</span> N$4000</span> 
+        <span><span class="gold">🥉</span> N$2000</span>
       </div>
       
       <h3 class="gold">📊 Top 10 Verified Referrers</h3>
@@ -644,13 +631,7 @@
         <p style="text-align:center; color:#d4af37;">Loading leaderboard...</p>
       </div>
       
-      <!-- Leaderboard note -->
-      <p style="font-size:0.85rem; margin-top:1rem; color:#b9ae9e; text-align:center;">
-        📊 The leaderboard shows lifetime totals for the Grand Prize competition only. 
-        It does NOT affect the monthly random draw.
-      </p>
-      
-      <!-- Motivation message box -->
+      <!-- Motivation message box (dynamic) -->
       <div id="motivationBox" class="motivation-box hidden">
         <span id="motivationMessage"></span>
       </div>
@@ -773,8 +754,7 @@
       // ---------- CONFIGURATION ----------
       const OWNER_NUMBER = '264858037092';
       const BASE_URL = 'https://amawinagiveaway.pages.dev';
-      // *** ONLY THIS LINE CHANGED - NEW URL ***
-      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoj5mHoZQjNHl2q3lBHCuqNlsDf4RVJtjZE3lDTi0/dev';
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm-YZnumNYnR2rWKZZHJ8gyQrx3XRLS7eyE5Sf6FUBnqoBPdm2LsI4ajKWBnFMqhZo/exec';
 
       // ---------- USER IDENTIFICATION ----------
       let currentUserWA = localStorage.getItem('amawina_user_wa');
@@ -818,10 +798,9 @@
         return cleaned; // Already normalized
       }
 
-      // ---------- GET USER IP ADDRESS (via Cloudflare headers or public API) ----------
+      // ---------- GET USER IP ADDRESS ----------
       async function getUserIP() {
         try {
-          // Try to get IP from Cloudflare headers first
           const response = await fetch('https://api.ipify.org?format=json');
           const data = await response.json();
           return data.ip;
@@ -905,7 +884,7 @@
         document.getElementById('howItWorks').scrollIntoView({ behavior: 'smooth' });
       }
 
-      // ---------- UPDATE LOGGED IN REFERRAL LINK ----------
+      // ---------- UPDATE LOGGED IN REFERRAL LINK (NEW FUNCTION) ----------
       function updateLoggedInReferralLink() {
         if (currentUsername) {
           const link = `${BASE_URL}/?ref=${currentUsername}`;
@@ -1224,7 +1203,7 @@
         document.getElementById('leaderboard-container').innerHTML = html;
       }
 
-      // ---------- LOGIN FUNCTION ----------
+      // ---------- LOGIN FUNCTION (UPDATED to show referral card) ----------
       async function login(username, whatsapp) {
         try {
           // Normalize WhatsApp number
@@ -1248,7 +1227,7 @@
             document.getElementById('userWelcome').classList.remove('hidden');
             document.getElementById('welcomeUsername').innerText = username;
             
-            // Show referral link card
+            // Show referral link card (NEW)
             document.getElementById('referralCardContainer').classList.remove('hidden');
             updateLoggedInReferralLink();
             
@@ -1272,7 +1251,7 @@
         }
       }
 
-      // ---------- LOGOUT FUNCTION ----------
+      // ---------- LOGOUT FUNCTION (UPDATED to hide referral card) ----------
       function logout() {
         localStorage.removeItem('amawina_user_wa');
         localStorage.removeItem('amawina_username');
@@ -1282,7 +1261,7 @@
         
         document.getElementById('loginFormContainer').classList.remove('hidden');
         document.getElementById('userWelcome').classList.add('hidden');
-        document.getElementById('referralCardContainer').classList.add('hidden');
+        document.getElementById('referralCardContainer').classList.add('hidden'); // NEW
         document.getElementById('motivationBox').classList.add('hidden');
         
         // Reset progress bars to 0
@@ -1321,16 +1300,16 @@
       // ---------- CHANNEL REMINDER BUTTON HANDLER ----------
       document.getElementById('channelReminderBtn').addEventListener('click', scrollToChannels);
 
-      // ---------- CHECK IF USER IS ALREADY LOGGED IN ----------
+      // ---------- CHECK IF USER IS ALREADY LOGGED IN (UPDATED to show referral card) ----------
       if (currentUserWA && currentUsername) {
         document.getElementById('loginFormContainer').classList.add('hidden');
         document.getElementById('userWelcome').classList.remove('hidden');
         document.getElementById('welcomeUsername').innerText = currentUsername;
-        document.getElementById('referralCardContainer').classList.remove('hidden');
-        updateLoggedInReferralLink();
+        document.getElementById('referralCardContainer').classList.remove('hidden'); // NEW
+        updateLoggedInReferralLink(); // NEW
       }
 
-      // ---------- REGISTRATION FORM HANDLER (WITH IP LIMITS) ----------
+      // ---------- REGISTRATION FORM HANDLER (UPDATED to show referral card) ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
@@ -1434,7 +1413,7 @@
           document.getElementById('userWelcome').classList.remove('hidden');
           document.getElementById('welcomeUsername').innerText = username;
           
-          // Show referral link card
+          // Show referral link card (NEW)
           document.getElementById('referralCardContainer').classList.remove('hidden');
           updateLoggedInReferralLink();
           
