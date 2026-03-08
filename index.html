@@ -231,7 +231,7 @@
       font-weight: 700;
     }
 
-    /* NEW: Referral link card */
+    /* Referral link card */
     .referral-card {
       background: linear-gradient(145deg, #1a2c3b, #0f2637);
       border: 2px solid #d4af37;
@@ -549,7 +549,7 @@
       </div>
     </div>
 
-    <!-- NEW: Referral Link Card (appears after login) -->
+    <!-- Referral Link Card (appears after login) -->
     <div id="referralCardContainer" class="hidden">
       <div class="referral-card">
         <h2 class="gold">🔗 Your Referral Link</h2>
@@ -616,7 +616,7 @@
       <p style="font-size:0.9rem; margin-top:0.8rem;">The monthly winners are randomly selected automatically by the system using verified participant data. AmaWina does not manually choose the winners. After the automatic selection, each winner will be manually verified to confirm that they followed the giveaway requirements before prizes are awarded.</p>
     </div>
 
-    <!-- Grand Prize + Leaderboard (NOW TOP 10) -->
+    <!-- Grand Prize + Leaderboard (TOP 10) -->
     <div class="card">
       <h2 class="gold">🏆 Grand Prize (N$12,000)</h2>
       <p>When AmaWina reaches 50k followers:</p>
@@ -884,7 +884,7 @@
         document.getElementById('howItWorks').scrollIntoView({ behavior: 'smooth' });
       }
 
-      // ---------- UPDATE LOGGED IN REFERRAL LINK (NEW FUNCTION) ----------
+      // ---------- UPDATE LOGGED IN REFERRAL LINK ----------
       function updateLoggedInReferralLink() {
         if (currentUsername) {
           const link = `${BASE_URL}/?ref=${currentUsername}`;
@@ -1203,23 +1203,27 @@
         document.getElementById('leaderboard-container').innerHTML = html;
       }
 
-      // ---------- LOGIN FUNCTION (UPDATED to show referral card) ----------
+      // ---------- FIXED LOGIN FUNCTION (Now works for old users) ----------
       async function login(username, whatsapp) {
         try {
-          // Normalize WhatsApp number
+          // Normalize WhatsApp number (returns string like "264815562858")
           const normalizedWA = normalizeNumber(whatsapp);
           
-          // Find user in allReferrals
-          const userRow = allReferrals.find(row => 
-            row.name === username && row.whatsapp.toString() === normalizedWA
-          );
+          // Convert to string for comparison
+          const normalizedWAStr = String(normalizedWA);
+          
+          // Find user in allReferrals - compare both as strings
+          const userRow = allReferrals.find(row => {
+            const rowWA = String(row.whatsapp).replace(/\D/g, '');
+            return row.name === username && rowWA === normalizedWAStr;
+          });
           
           if (userRow) {
             // Store in localStorage
-            localStorage.setItem('amawina_user_wa', normalizedWA);
+            localStorage.setItem('amawina_user_wa', normalizedWAStr);
             localStorage.setItem('amawina_username', username);
             
-            currentUserWA = normalizedWA;
+            currentUserWA = normalizedWAStr;
             currentUsername = username;
             
             // Update UI
@@ -1227,7 +1231,7 @@
             document.getElementById('userWelcome').classList.remove('hidden');
             document.getElementById('welcomeUsername').innerText = username;
             
-            // Show referral link card (NEW)
+            // Show referral link card
             document.getElementById('referralCardContainer').classList.remove('hidden');
             updateLoggedInReferralLink();
             
@@ -1251,7 +1255,7 @@
         }
       }
 
-      // ---------- LOGOUT FUNCTION (UPDATED to hide referral card) ----------
+      // ---------- LOGOUT FUNCTION ----------
       function logout() {
         localStorage.removeItem('amawina_user_wa');
         localStorage.removeItem('amawina_username');
@@ -1261,7 +1265,7 @@
         
         document.getElementById('loginFormContainer').classList.remove('hidden');
         document.getElementById('userWelcome').classList.add('hidden');
-        document.getElementById('referralCardContainer').classList.add('hidden'); // NEW
+        document.getElementById('referralCardContainer').classList.add('hidden');
         document.getElementById('motivationBox').classList.add('hidden');
         
         // Reset progress bars to 0
@@ -1300,16 +1304,16 @@
       // ---------- CHANNEL REMINDER BUTTON HANDLER ----------
       document.getElementById('channelReminderBtn').addEventListener('click', scrollToChannels);
 
-      // ---------- CHECK IF USER IS ALREADY LOGGED IN (UPDATED to show referral card) ----------
+      // ---------- CHECK IF USER IS ALREADY LOGGED IN ----------
       if (currentUserWA && currentUsername) {
         document.getElementById('loginFormContainer').classList.add('hidden');
         document.getElementById('userWelcome').classList.remove('hidden');
         document.getElementById('welcomeUsername').innerText = currentUsername;
-        document.getElementById('referralCardContainer').classList.remove('hidden'); // NEW
-        updateLoggedInReferralLink(); // NEW
+        document.getElementById('referralCardContainer').classList.remove('hidden');
+        updateLoggedInReferralLink();
       }
 
-      // ---------- REGISTRATION FORM HANDLER (UPDATED to show referral card) ----------
+      // ---------- REGISTRATION FORM HANDLER ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
@@ -1413,7 +1417,7 @@
           document.getElementById('userWelcome').classList.remove('hidden');
           document.getElementById('welcomeUsername').innerText = username;
           
-          // Show referral link card (NEW)
+          // Show referral link card
           document.getElementById('referralCardContainer').classList.remove('hidden');
           updateLoggedInReferralLink();
           
