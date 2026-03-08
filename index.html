@@ -773,7 +773,8 @@
       // ---------- CONFIGURATION ----------
       const OWNER_NUMBER = '264858037092';
       const BASE_URL = 'https://amawinagiveaway.pages.dev';
-      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm-YZnumNYnR2rWKZZHJ8gyQrx3XRLS7eyE5Sf6FUBnqoBPdm2LsI4ajKWBnFMqhZo/exec';
+      // *** ONLY THIS LINE CHANGED - NEW URL ***
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoj5mHoZQjNHl2q3lBHCuqNlsDf4RVJtjZE3lDTi0/dev';
 
       // ---------- USER IDENTIFICATION ----------
       let currentUserWA = localStorage.getItem('amawina_user_wa');
@@ -817,9 +818,10 @@
         return cleaned; // Already normalized
       }
 
-      // ---------- GET USER IP ADDRESS ----------
+      // ---------- GET USER IP ADDRESS (via Cloudflare headers or public API) ----------
       async function getUserIP() {
         try {
+          // Try to get IP from Cloudflare headers first
           const response = await fetch('https://api.ipify.org?format=json');
           const data = await response.json();
           return data.ip;
@@ -1328,7 +1330,7 @@
         updateLoggedInReferralLink();
       }
 
-      // ---------- REGISTRATION FORM HANDLER ----------
+      // ---------- REGISTRATION FORM HANDLER (WITH IP LIMITS) ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
