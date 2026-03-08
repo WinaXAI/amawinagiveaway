@@ -214,6 +214,23 @@
     .leaderboard-invites { background: #2ecc71; color: #0a1a2b; padding: 0.2rem 1rem; border-radius: 60px; font-weight: 600; }
     .prize-tag { background: #d4af37; color: #0a1a2b; padding: 0.2rem 1rem; border-radius: 60px; font-weight: 600; }
 
+    /* Motivation message box */
+    .motivation-box {
+      background: linear-gradient(145deg, #1a2c3b, #0f2637);
+      border: 2px solid #d4af37;
+      border-radius: 60px;
+      padding: 1.2rem 1.5rem;
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 1.1rem;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+    
+    .motivation-box span {
+      color: #d4af37;
+      font-weight: 700;
+    }
+
     .winner-item {
       background: #1a2c3b;
       border-radius: 1.5rem;
@@ -545,7 +562,7 @@
       <p style="font-size:0.9rem; margin-top:0.8rem;">The monthly winners are randomly selected automatically by the system using verified participant data. AmaWina does not manually choose the winners. After the automatic selection, each winner will be manually verified to confirm that they followed the giveaway requirements before prizes are awarded.</p>
     </div>
 
-    <!-- Grand Prize + Leaderboard -->
+    <!-- Grand Prize + Leaderboard (NOW TOP 10) -->
     <div class="card">
       <h2 class="gold">🏆 Grand Prize (N$12,000)</h2>
       <p>When AmaWina reaches 50k followers:</p>
@@ -555,11 +572,17 @@
         <span><span class="gold">🥉</span> N$2000</span>
       </div>
       
-      <h3 class="gold">📊 Top Verified Referrers</h3>
+      <h3 class="gold">📊 Top 10 Verified Referrers</h3>
       <div id="leaderboard-container">
         <p style="text-align:center; color:#d4af37;">Loading leaderboard...</p>
       </div>
-      <p style="font-size:0.8rem;">Leaderboard updates automatically every 60 seconds from real verification data.</p>
+      
+      <!-- Motivation message box (dynamic) -->
+      <div id="motivationBox" class="motivation-box hidden">
+        <span id="motivationMessage"></span>
+      </div>
+      
+      <p style="font-size:0.8rem; margin-top:1rem;">Leaderboard updates automatically every 60 seconds from real verification data.</p>
     </div>
 
     <!-- Registration Form -->
@@ -688,8 +711,6 @@
       let monthlyWinners = [];
 
       // ---------- IP TRACKING STORAGE ----------
-      // In a real implementation, this would be stored in Google Sheets
-      // For now, we'll use localStorage as a temporary solution
       let ipRecords = JSON.parse(localStorage.getItem('amawina_ip_records')) || [];
 
       // ---------- HELPER FUNCTIONS ----------
@@ -723,10 +744,9 @@
         return cleaned; // Already normalized
       }
 
-      // ---------- GET USER IP ADDRESS (via Cloudflare headers or public API) ----------
+      // ---------- GET USER IP ADDRESS ----------
       async function getUserIP() {
         try {
-          // Try to get IP from Cloudflare headers first
           const response = await fetch('https://api.ipify.org?format=json');
           const data = await response.json();
           return data.ip;
@@ -991,7 +1011,7 @@
         }
       }
 
-      // ---------- CALCULATE LEADERBOARD ----------
+      // ---------- CALCULATE LEADERBOARD (TOP 10) ----------
       function calculateLeaderboard() {
         const referrerMap = new Map();
         
@@ -1011,11 +1031,61 @@
         });
         
         leaderboardArray.sort((a, b) => b.count - a.count);
-        const topSix = leaderboardArray.slice(0, 6);
-        renderLeaderboard(topSix);
+        const topTen = leaderboardArray.slice(0, 10);
+        renderLeaderboard(topTen);
+        
+        // Update motivation message for logged in user
+        if (currentUsername) {
+          updateMotivationMessage(leaderboardArray);
+        }
       }
 
-      // ---------- RENDER LEADERBOARD ----------
+      // ---------- UPDATE MOTIVATION MESSAGE ----------
+      function updateMotivationMessage(allUsers) {
+        const userIndex = allUsers.findIndex(u => u.username === currentUsername);
+        const motivationBox = document.getElementById('motivationBox');
+        const motivationMsg = document.getElementById('motivationMessage');
+        
+        if (userIndex === -1) {
+          // User not in top 10
+          if (allUsers.length >= 10) {
+            const tenthPlace = allUsers[9].count;
+            const userLifetime = allUsers.find(u => u.username === currentUsername)?.count || 0;
+            const needed = tenthPlace - userLifetime + 1;
+            if (needed > 0) {
+              motivationMsg.innerText = `💪 You need ${needed} more verified referrals to reach the Top 10 leaderboard!`;
+              motivationBox.classList.remove('hidden');
+            } else {
+              motivationBox.classList.add('hidden');
+            }
+          } else {
+            // Less than 10 people on leaderboard
+            motivationMsg.innerText = `💪 Keep inviting! You can be the next one on this leaderboard!`;
+            motivationBox.classList.remove('hidden');
+          }
+        } else if (userIndex < 3) {
+          // User is in top 3
+          if (userIndex === 0) {
+            motivationMsg.innerText = `👑 You're #1! Amazing work! Keep going to stay on top!`;
+          } else {
+            const nextRank = allUsers[userIndex - 1];
+            const needed = nextRank.count - allUsers[userIndex].count + 1;
+            motivationMsg.innerText = `👑 You're #${userIndex + 1}! Just ${needed} more referrals to reach #${userIndex}!`;
+          }
+          motivationBox.classList.remove('hidden');
+        } else if (userIndex < 10) {
+          // User is in top 10 but not top 3
+          const thirdPlace = allUsers[2].count;
+          const needed = thirdPlace - allUsers[userIndex].count + 1;
+          motivationMsg.innerText = `🔥 You're #${userIndex + 1}! Just ${needed} more referrals to break into the TOP 3 and win cash prizes!`;
+          motivationBox.classList.remove('hidden');
+        } else {
+          // User is beyond top 10
+          motivationBox.classList.add('hidden');
+        }
+      }
+
+      // ---------- RENDER LEADERBOARD (TOP 10) ----------
       function renderLeaderboard(leaderboardData) {
         if (!leaderboardData || leaderboardData.length === 0) {
           document.getElementById('leaderboard-container').innerHTML = 
@@ -1031,10 +1101,11 @@
           else if (rank === 2) rankClass = 'rank-2';
           else if (rank === 3) rankClass = 'rank-3';
           
+          // Only show prize tags for top 3
           let prize = '';
-          if (rank === 1) prize = 'N$6000';
-          else if (rank === 2) prize = 'N$4000';
-          else if (rank === 3) prize = 'N$2000';
+          if (rank === 1) prize = '🥇 N$6000';
+          else if (rank === 2) prize = '🥈 N$4000';
+          else if (rank === 3) prize = '🥉 N$2000';
 
           const displayName = entry.username;
           // Find WhatsApp number for this username
@@ -1082,6 +1153,11 @@
             // Calculate and show progress
             calculateUserReferrals(username);
             
+            // Update motivation message
+            setTimeout(() => {
+              calculateLeaderboard();
+            }, 500);
+            
             return true;
           } else {
             document.getElementById('loginError').innerText = 'Invalid username or WhatsApp number';
@@ -1104,6 +1180,7 @@
         
         document.getElementById('loginFormContainer').classList.remove('hidden');
         document.getElementById('userWelcome').classList.add('hidden');
+        document.getElementById('motivationBox').classList.add('hidden');
         
         // Reset progress bars to 0
         updateProgressBars(0, 0);
@@ -1148,7 +1225,7 @@
         document.getElementById('welcomeUsername').innerText = currentUsername;
       }
 
-      // ---------- REGISTRATION FORM HANDLER (WITH IP LIMITS) ----------
+      // ---------- REGISTRATION FORM HANDLER ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
