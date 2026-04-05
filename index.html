@@ -231,7 +231,7 @@
       font-weight: 700;
     }
 
-    /* NEW: Referral link card */
+    /* Referral link card */
     .referral-card {
       background: linear-gradient(145deg, #1a2c3b, #0f2637);
       border: 2px solid #d4af37;
@@ -263,12 +263,39 @@
       max-width: 200px;
     }
 
+    /* Winner item with claim button */
     .winner-item {
       background: #1a2c3b;
       border-radius: 1.5rem;
       padding: 1rem;
       margin-bottom: 0.8rem;
       border-left: 5px solid #d4af37;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .winner-info {
+      flex: 1;
+    }
+    
+    .claim-btn {
+      background: #2ecc71;
+      color: #0a1a2b;
+      font-weight: 700;
+      padding: 0.5rem 1.2rem;
+      border-radius: 60px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+    
+    .claim-btn:hover {
+      background: #27ae60;
+      transform: scale(1.02);
     }
 
     .countdown-panel {
@@ -483,6 +510,16 @@
         width: 100%;
         max-width: 100%;
       }
+      
+      .winner-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .claim-btn {
+        width: 100%;
+        padding: 0.8rem;
+      }
     }
   </style>
 </head>
@@ -549,7 +586,7 @@
       </div>
     </div>
 
-    <!-- NEW: Referral Link Card (appears after login) -->
+    <!-- Referral Link Card (appears after login) -->
     <div id="referralCardContainer" class="hidden">
       <div class="referral-card">
         <h2 class="gold">🔗 Your Referral Link</h2>
@@ -607,13 +644,42 @@
       </div>
     </div>
 
-    <!-- Winners Display -->
+    <!-- Winners Display - UPDATED WITH YOUR WINNERS AND MASKED NUMBERS -->
     <div class="card">
-      <h2 class="gold">🏅 Latest Monthly Winners</h2>
+      <h2 class="gold">🏅 Monthly Winners - April 2025</h2>
       <div id="winnersContainer">
-        <p style="text-align:center; color:#d4af37;">Winners will be announced after each monthly draw</p>
+        <!-- 1st Place -->
+        <div class="winner-item">
+          <div class="winner-info">
+            <span class="gold" style="font-weight:700;">🥇 1st Place</span><br>
+            Username: <strong>Beauty4</strong><br>
+            +264812**008<br>
+            Prize: N$1500
+          </div>
+          <button class="claim-btn" data-username="Beauty4" data-position="1st" data-prize="N$1500">🎁 Claim Reward</button>
+        </div>
+        <!-- 2nd Place -->
+        <div class="winner-item">
+          <div class="winner-info">
+            <span class="gold" style="font-weight:700;">🥈 2nd Place</span><br>
+            Username: <strong>Grace22</strong><br>
+            +264814**399<br>
+            Prize: N$1000
+          </div>
+          <button class="claim-btn" data-username="Grace22" data-position="2nd" data-prize="N$1000">🎁 Claim Reward</button>
+        </div>
+        <!-- 3rd Place -->
+        <div class="winner-item">
+          <div class="winner-info">
+            <span class="gold" style="font-weight:700;">🥉 3rd Place</span><br>
+            Username: <strong>BigJ077</strong><br>
+            +264814**177<br>
+            Prize: N$500
+          </div>
+          <button class="claim-btn" data-username="BigJ077" data-position="3rd" data-prize="N$500">🎁 Claim Reward</button>
+        </div>
       </div>
-      <p style="font-size:0.9rem; margin-top:0.8rem;">The monthly winners are randomly selected automatically by the system using verified participant data. AmaWina does not manually choose the winners. After the automatic selection, each winner will be manually verified to confirm that they followed the giveaway requirements before prizes are awarded.</p>
+      <p style="font-size:0.9rem; margin-top:0.8rem;">Winners have been randomly selected based on their verified referrals. Click Claim Reward to receive your prize.</p>
     </div>
 
     <!-- Grand Prize + Leaderboard (TOP 10) -->
@@ -751,7 +817,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script>
     (function() {
-      // ---------- CONFIGURATION (ORIGINAL WORKING URL) ----------
+      // ---------- CONFIGURATION ----------
       const OWNER_NUMBER = '264858037092';
       const BASE_URL = 'https://amawinagiveaway.pages.dev';
       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm-YZnumNYnR2rWKZZHJ8gyQrx3XRLS7eyE5Sf6FUBnqoBPdm2LsI4ajKWBnFMqhZo/exec';
@@ -766,6 +832,27 @@
 
       // ---------- IP TRACKING STORAGE ----------
       let ipRecords = JSON.parse(localStorage.getItem('amawina_ip_records')) || [];
+
+      // ---------- CLAIM REWARD BUTTON HANDLERS ----------
+      function setupClaimButtons() {
+        document.querySelectorAll('.claim-btn').forEach(btn => {
+          btn.removeEventListener('click', claimHandler);
+          btn.addEventListener('click', claimHandler);
+        });
+      }
+      
+      function claimHandler(e) {
+        const btn = e.currentTarget;
+        const username = btn.getAttribute('data-username');
+        const position = btn.getAttribute('data-position');
+        const prize = btn.getAttribute('data-prize');
+        
+        // Construct the message (no phone number revealed)
+        const message = `I'm ${username}, ${position} Place winner in AmaWina Giveaway. Claiming my ${prize} reward.`;
+        
+        // Open WhatsApp with pre-filled message to YOUR business number
+        window.open(`https://wa.me/${OWNER_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+      }
 
       // ---------- HELPER FUNCTIONS ----------
       function maskNumber(num) {
@@ -884,7 +971,7 @@
         document.getElementById('howItWorks').scrollIntoView({ behavior: 'smooth' });
       }
 
-      // ---------- UPDATE LOGGED IN REFERRAL LINK (NEW) ----------
+      // ---------- UPDATE LOGGED IN REFERRAL LINK ----------
       function updateLoggedInReferralLink() {
         if (currentUsername) {
           const link = `${BASE_URL}/?ref=${currentUsername}`;
@@ -1022,14 +1109,17 @@
           const maskedWA = userRow ? maskNumber(userRow.whatsapp) : 'Unknown';
           
           html += `<div class="winner-item">
-            ${medal} ${idx + 1} Place<br>
-            Username: ${winner.name}<br>
-            WhatsApp: ${maskedWA}<br>
-            Prize: ${prizes[idx]}
+            <div class="winner-info">
+              ${medal} ${idx + 1} Place<br>
+              Username: ${winner.name}<br>
+              WhatsApp: ${maskedWA}<br>
+              Prize: ${prizes[idx]}
+            </div>
           </div>`;
         });
         
         document.getElementById('winnersContainer').innerHTML = html;
+        setupClaimButtons();
       }
 
       // ---------- CHECK IF USERNAME EXISTS ----------
@@ -1203,7 +1293,7 @@
         document.getElementById('leaderboard-container').innerHTML = html;
       }
 
-      // ---------- FIXED LOGIN FUNCTION (works for old users) ----------
+      // ---------- LOGIN FUNCTION ----------
       async function login(username, whatsapp) {
         try {
           // Normalize WhatsApp number
@@ -1231,7 +1321,7 @@
             document.getElementById('userWelcome').classList.remove('hidden');
             document.getElementById('welcomeUsername').innerText = username;
             
-            // Show referral link card (NEW)
+            // Show referral link card
             document.getElementById('referralCardContainer').classList.remove('hidden');
             updateLoggedInReferralLink();
             
@@ -1255,7 +1345,7 @@
         }
       }
 
-      // ---------- LOGOUT FUNCTION (updated to hide referral card) ----------
+      // ---------- LOGOUT FUNCTION ----------
       function logout() {
         localStorage.removeItem('amawina_user_wa');
         localStorage.removeItem('amawina_username');
@@ -1265,7 +1355,7 @@
         
         document.getElementById('loginFormContainer').classList.remove('hidden');
         document.getElementById('userWelcome').classList.add('hidden');
-        document.getElementById('referralCardContainer').classList.add('hidden'); // NEW
+        document.getElementById('referralCardContainer').classList.add('hidden');
         document.getElementById('motivationBox').classList.add('hidden');
         
         // Reset progress bars to 0
@@ -1304,16 +1394,16 @@
       // ---------- CHANNEL REMINDER BUTTON HANDLER ----------
       document.getElementById('channelReminderBtn').addEventListener('click', scrollToChannels);
 
-      // ---------- CHECK IF USER IS ALREADY LOGGED IN (updated to show referral card) ----------
+      // ---------- CHECK IF USER IS ALREADY LOGGED IN ----------
       if (currentUserWA && currentUsername) {
         document.getElementById('loginFormContainer').classList.add('hidden');
         document.getElementById('userWelcome').classList.remove('hidden');
         document.getElementById('welcomeUsername').innerText = currentUsername;
-        document.getElementById('referralCardContainer').classList.remove('hidden'); // NEW
-        updateLoggedInReferralLink(); // NEW
+        document.getElementById('referralCardContainer').classList.remove('hidden');
+        updateLoggedInReferralLink();
       }
 
-      // ---------- REGISTRATION FORM HANDLER (ORIGINAL WORKING VERSION) ----------
+      // ---------- REGISTRATION FORM HANDLER ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
@@ -1417,7 +1507,7 @@
           document.getElementById('userWelcome').classList.remove('hidden');
           document.getElementById('welcomeUsername').innerText = username;
           
-          // Show referral link card (NEW)
+          // Show referral link card
           document.getElementById('referralCardContainer').classList.remove('hidden');
           updateLoggedInReferralLink();
           
@@ -1481,6 +1571,9 @@ END:VCARD`;
           }
         });
       });
+
+      // Setup claim buttons after page loads
+      setupClaimButtons();
 
     })();
   </script>
