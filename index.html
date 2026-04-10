@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>AmaWina · Real Referral Giveaway</title>
+  <title>AmaWina · Refer & Earn Commission</title>
   <style>
     /* ---------- COMPLETE CSS (unchanged) ---------- */
     * {
@@ -148,45 +148,117 @@
     
     .channel-btn:hover { animation: none; transform: scale(1.02); }
 
-    .progress-card {
-      background: #1a2c3b;
+    /* Earnings Card */
+    .earnings-card {
+      background: linear-gradient(145deg, #1a2c3b, #0f2637);
       border-radius: 2rem;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
+      border: 1px solid #d4af37;
     }
     
-    .progress-label {
+    .earnings-stats {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.8rem;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 1rem;
+      margin: 1rem 0;
     }
     
-    .progress-bar-bg {
+    .stat-box {
+      flex: 1;
+      background: #1e3a4b;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #d4af37;
+    }
+    
+    .balance-amount {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #d4af37;
+      margin: 0.5rem 0;
+    }
+    
+    .withdraw-countdown {
+      background: #1e3a4b;
+      border-radius: 60px;
+      padding: 0.8rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    /* Top Withdrawers Leaderboard */
+    .top-withdrawer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #2a4055;
+    }
+    
+    .rank-medal {
+      font-size: 1.5rem;
+    }
+    
+    /* Withdrawal Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 24px;
-      background: #2a4055;
-      border-radius: 60px;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #d4af37, #f5d654);
-      width: 0%;
-      transition: width 0.5s ease;
-      border-radius: 60px;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
     }
     
-    .badge-qualified {
-      background: #2ecc71;
-      color: #0a1a2b;
-      padding: 0.4rem 1.2rem;
+    .modal-content {
+      background: #1a2c3b;
+      border-radius: 2rem;
+      padding: 2rem;
+      max-width: 90%;
+      width: 400px;
+      border: 2px solid #d4af37;
+    }
+    
+    .modal-content h3 {
+      margin-bottom: 1rem;
+    }
+    
+    .modal-content select, .modal-content input {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
       border-radius: 60px;
-      display: inline-block;
-      font-weight: 600;
-      margin-top: 0.8rem;
+      border: none;
+      background: #1e3a4b;
+      color: white;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .modal-buttons button {
+      flex: 1;
+    }
+    
+    .condition-field {
+      display: none;
+    }
+    
+    .condition-field.show {
+      display: block;
     }
 
     .leaderboard-row {
@@ -214,7 +286,6 @@
     .leaderboard-invites { background: #2ecc71; color: #0a1a2b; padding: 0.2rem 1rem; border-radius: 60px; font-weight: 600; }
     .prize-tag { background: #d4af37; color: #0a1a2b; padding: 0.2rem 1rem; border-radius: 60px; font-weight: 600; }
 
-    /* Motivation message box */
     .motivation-box {
       background: linear-gradient(145deg, #1a2c3b, #0f2637);
       border: 2px solid #d4af37;
@@ -226,12 +297,6 @@
       box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
     }
     
-    .motivation-box span {
-      color: #d4af37;
-      font-weight: 700;
-    }
-
-    /* Referral link card */
     .referral-card {
       background: linear-gradient(145deg, #1a2c3b, #0f2637);
       border: 2px solid #d4af37;
@@ -262,60 +327,25 @@
       flex: 1;
       max-width: 200px;
     }
-
-    /* Winner item with claim button */
-    .winner-item {
-      background: #1a2c3b;
-      border-radius: 1.5rem;
-      padding: 1rem;
-      margin-bottom: 0.8rem;
-      border-left: 5px solid #d4af37;
+    
+    .share-buttons {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
       gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
     }
     
-    .winner-info {
-      flex: 1;
-    }
-    
-    .claim-btn {
-      background: #2ecc71;
-      color: #0a1a2b;
-      font-weight: 700;
-      padding: 0.5rem 1.2rem;
+    .share-btn {
+      padding: 0.5rem 1rem;
       border-radius: 60px;
       border: none;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.9rem;
+      font-weight: 600;
     }
     
-    .claim-btn:hover {
-      background: #27ae60;
-      transform: scale(1.02);
-    }
-
-    .countdown-panel {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-      margin: 1rem 0;
-      flex-wrap: wrap;
-    }
-    
-    .countdown-block {
-      background: #0f2637;
-      border-radius: 1.5rem;
-      padding: 1rem 0.3rem;
-      flex: 1 1 70px;
-      text-align: center;
-      border: 1px solid #2ecc71;
-    }
-    
-    .countdown-number { font-size: clamp(1.5rem, 6vw, 2.2rem); font-weight: 800; color: #2ecc71; text-shadow: 0 0 12px #2ecc71; }
+    .share-wa { background: #25D366; color: white; }
+    .share-fb { background: #1877F2; color: white; }
+    .share-tg { background: #0088cc; color: white; }
 
     .namibia-clock {
       background: #1e3a4b;
@@ -348,7 +378,6 @@
     .ref-box { background: #1e3a4b; border-radius: 60px; padding: 1rem; border: 1px solid #d4af37; word-break: break-all; }
     .hidden { display: none !important; }
     
-    /* Login form styles */
     #loginSection {
       margin-bottom: 1.5rem;
     }
@@ -385,7 +414,6 @@
       margin-bottom: 1rem;
     }
     
-    /* Register link */
     .register-link {
       text-align: center;
       margin-top: 1rem;
@@ -398,11 +426,6 @@
       font-weight: 600;
     }
     
-    .register-link a:hover {
-      color: #f5d654;
-    }
-    
-    /* Format hint */
     .format-hint {
       font-size: 0.85rem;
       color: #b9ae9e;
@@ -415,7 +438,6 @@
       font-weight: 600;
     }
     
-    /* Channel reminder button */
     .channel-reminder-btn {
       background: transparent;
       border: 2px solid #d4af37;
@@ -434,7 +456,6 @@
       color: #0a1a2b;
     }
     
-    /* ===== FIXED EXPANDABLE CARDS - FULL CONTENT ALWAYS VISIBLE ===== */
     .expandable {
       cursor: pointer;
       transition: all 0.3s ease;
@@ -469,6 +490,65 @@
     .expand-content li {
       margin-bottom: 0.5rem;
       line-height: 1.5;
+    }
+
+    /* Welcome Popup */
+    .welcome-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 2000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .welcome-popup-content {
+      background: linear-gradient(145deg, #1a2c3b, #0f2637);
+      border: 2px solid #d4af37;
+      border-radius: 2rem;
+      padding: 2rem;
+      max-width: 90%;
+      width: 400px;
+      text-align: center;
+      animation: popIn 0.5s;
+    }
+    
+    .welcome-popup-content h2 {
+      color: #d4af37;
+      margin-bottom: 1rem;
+    }
+    
+    .welcome-popup-content p {
+      margin-bottom: 0.8rem;
+      line-height: 1.6;
+    }
+    
+    .steps-list-popup {
+      text-align: left;
+      margin: 1.5rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    .steps-list-popup li {
+      margin-bottom: 0.8rem;
+      color: #e0d6c8;
+    }
+    
+    .welcome-ok-btn {
+      background: linear-gradient(145deg, #d4af37, #b38f2c);
+      color: #0a1a2b;
+      font-weight: 700;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 1rem;
     }
 
     @media (max-width: 480px) {
@@ -511,20 +591,21 @@
         max-width: 100%;
       }
       
-      .winner-item {
+      .share-buttons {
         flex-direction: column;
-        text-align: center;
       }
       
-      .claim-btn {
-        width: 100%;
-        padding: 0.8rem;
+      .earnings-stats {
+        flex-direction: column;
+      }
+      
+      .welcome-popup-content {
+        padding: 1.5rem;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Animated background -->
   <div class="bg-animation">
     <div class="floating-gift" style="left:5%;">🎁</div>
     <div class="floating-gift" style="left:20%;">🎀</div>
@@ -535,28 +616,42 @@
     <div class="glow-light" style="top:10%; left:-50px;"></div>
   </div>
 
+  <!-- Welcome Popup (shows once for new visitors) -->
+  <div id="welcomePopup" class="welcome-popup">
+    <div class="welcome-popup-content">
+      <h2>🎁 WELCOME TO AMAWINA! 🎁</h2>
+      <p>New Here? Follow these <span class="gold">4 steps</span> to claim your <span class="gold">N$100 BONUS!</span></p>
+      <ul class="steps-list-popup">
+        <li>✅ Step 1: Join AmaWina WhatsApp Channel</li>
+        <li>✅ Step 2: Join WinaX WhatsApp Channel</li>
+        <li>✅ Step 3: Save our official WhatsApp number (+264858037092)</li>
+        <li>✅ Step 4: Send <span class="gold">"VERIFY [your username]"</span> on WhatsApp</li>
+      </ul>
+      <p>After completing all steps, your <span class="gold">N$100 bonus</span> will be credited!</p>
+      <p>Then refer friends and earn <span class="gold">N$6 per direct referral + N$2 for second-level!</span></p>
+      <button class="welcome-ok-btn" id="welcomeOkBtn">OK, Got it!</button>
+    </div>
+  </div>
+
   <div class="container">
     <h1>AmaWina Global Referral Giveaway</h1>
-    <div class="subtitle">Invite Friends. Win Cash Rewards.</div>
+    <div class="subtitle">Invite Friends. Earn N$6 Per Direct Referral + N$2 Per Second-Level. Win Grand Prize.</div>
 
-    <!-- Namibia Clock -->
     <div class="namibia-clock" id="namibiaClock">Loading Namibia time...</div>
 
     <!-- How It Works -->
     <div class="card">
       <h2 class="gold" id="howItWorks">📋 How It Works</h2>
       <div class="channel-buttons-container" id="channelButtons">
-        <a href="https://whatsapp.com/channel/0029Vb6gOkfFSAt4J8eU7n1N" target="_blank" class="channel-btn channel-amawina">📢 JOIN AMAWINA CHANNEL</a>
-        <a href="https://whatsapp.com/channel/0029Vb6h5Ch5a243QSc3xr1X" target="_blank" class="channel-btn channel-winaX">👥 JOIN WINAX CHANNEL</a>
+        <a href="https://whatsapp.com/channel/0029Vb6gOkfFSAt4J8eU7n1N" target="_blank" class="channel-btn channel-amawina" id="joinChannel1Btn">📢 JOIN AMAWINA CHANNEL</a>
+        <a href="https://whatsapp.com/channel/0029Vb6h5Ch5a243QSc3xr1X" target="_blank" class="channel-btn channel-winaX" id="joinChannel2Btn">👥 JOIN WINAX CHANNEL</a>
       </div>
       <ol style="list-style-type: none; padding-left: 0;">
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">1.</span> <strong>Follow Both WhatsApp Channels</strong><br>Participants must follow the AmaWina WhatsApp Channel and the WinaX WhatsApp Channel to participate in the giveaway.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">1.</span> <strong>Follow Both WhatsApp Channels</strong><br>Participants must follow both channels to participate.</li>
         <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">2.</span> <strong>Register for the Giveaway</strong><br>Choose a unique username and enter your WhatsApp number.</li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">3.</span> <strong>Get Your Personal Referral Link</strong><br>After registering you will receive your unique referral link.<br>Example: <span class="gold">https://amawinagiveaway.pages.dev/?ref=Felly005</span></li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">4.</span> <strong>Invite Friends</strong><br>Share your referral link with friends. When they register using your link, the system records the referral automatically.</li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">5.</span> <strong>Friends Must Verify Their Entry</strong><br>After registering, each participant must verify their entry by sending the WhatsApp verification message.<br>Example message: <span class="gold">VERIFY Felly005</span><br>The message must be sent exactly as provided from the same WhatsApp number used during registration.</li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">6.</span> <strong>Verified Referrals Count</strong><br>Only verified referrals are counted. Participants must invite a minimum of 10 verified referrals within the month to qualify for the monthly draw.</li>
-        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">7.</span> <strong>Login to Track Progress</strong><br>Use your username and WhatsApp number to login and view your progress from any device.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">3.</span> <strong>Login to See Your Bonus & Balance</strong><br>After registration, login to view your N$100 welcome bonus and commission balance.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">4.</span> <strong>Get Your Personal Referral Link</strong><br>Share your link. When friends verify, you earn N$6 directly and N$2 for second-level.</li>
+        <li style="margin-bottom: 1.2rem;"><span class="gold" style="font-weight:700;">5.</span> <strong>Withdraw on the 5th</strong><br>Minimum N$400 to withdraw. Request payment via Bank Transfer, Ewallet, or RedotPay.</li>
       </ol>
     </div>
 
@@ -567,7 +662,7 @@
       
       <div id="loginFormContainer">
         <div class="login-row">
-          <input type="text" id="loginUsername" placeholder="Username (e.g., Felly005)" required>
+          <input type="text" id="loginUsername" placeholder="Username" required>
           <input type="tel" id="loginWhatsapp" placeholder="WhatsApp Number" required>
           <button class="btn-primary" id="loginBtn">Login</button>
         </div>
@@ -586,7 +681,7 @@
       </div>
     </div>
 
-    <!-- Referral Link Card (appears after login) -->
+    <!-- Referral Link Card (shown only when logged in) -->
     <div id="referralCardContainer" class="hidden">
       <div class="referral-card">
         <h2 class="gold">🔗 Your Referral Link</h2>
@@ -595,94 +690,76 @@
           <button class="btn-outline" id="loggedInCopyBtn">📋 Copy Link</button>
           <button class="btn-outline" id="loggedInShareBtn">💬 Share</button>
         </div>
+        <div class="share-buttons">
+          <button class="share-btn share-wa" id="shareWABtn">WhatsApp</button>
+          <button class="share-btn share-fb" id="shareFBBtn">Facebook</button>
+          <button class="share-btn share-tg" id="shareTGBtn">Telegram</button>
+        </div>
       </div>
     </div>
 
-    <!-- Progress Cards -->
-    <div class="card">
-      <h2 class="gold">📊 Your Monthly Progress</h2>
-      
-      <!-- Monthly Progress -->
-      <div class="progress-card">
-        <div class="progress-label">
-          <span class="gold">Monthly Qualification Progress</span>
-          <span id="monthlyCountDisplay">0 / 10 Verified Referrals</span>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-fill" id="monthlyProgressFill" style="width:0%;"></div>
-        </div>
-        <div id="monthlyMessage" style="margin-top:0.5rem;">10 verified referrals needed to qualify for this month's draw.</div>
-        <div id="qualifiedBadge" class="badge-qualified hidden">✅ You have qualified for this month's draw.</div>
-      </div>
-
-      <!-- Grand Prize Progress -->
-      <div class="progress-card">
-        <div class="progress-label">
-          <span class="gold">Grand Prize Competition</span>
-          <span id="lifetimeCountDisplay">0 Lifetime Verified Referrals</span>
-        </div>
-        <p style="margin-top:0.3rem;">You are competing for N$12,000 Grand Prize when the AmaWina channel reaches 50,000 followers.</p>
-      </div>
-    </div>
-
-    <!-- Monthly Giveaway -->
-    <div class="card">
-      <h2 class="gold">📆 Monthly Cash Giveaway (N$3000)</h2>
-      <p>10 verified referrals/month qualify. Draw on the 5th.</p>
-      <div style="display:flex; gap:1rem; flex-wrap:wrap; margin:1rem 0;">
-        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$1500</span><br>🥇 1st</div>
-        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$1000</span><br>🥈 2nd</div>
-        <div style="flex:1; text-align:center; background:#0f2637; border-radius:2rem; padding:1rem;"><span style="font-size:2rem; color:#d4af37;">N$500</span><br>🥉 3rd</div>
-      </div>
-
-      <h3 class="emerald">⏳ Next Monthly Draw</h3>
-      <div class="countdown-panel">
-        <div class="countdown-block"><span class="countdown-number" id="days">00</span><br>Days</div>
-        <div class="countdown-block"><span class="countdown-number" id="hours">00</span><br>Hours</div>
-        <div class="countdown-block"><span class="countdown-number" id="minutes">00</span><br>Mins</div>
-        <div class="countdown-block"><span class="countdown-number" id="seconds">00</span><br>Secs</div>
-      </div>
-    </div>
-
-    <!-- Winners Display - UPDATED WITH CORRECT YEAR 2026 -->
-    <div class="card">
-      <h2 class="gold">🏅 Monthly Winners - April 2026</h2>
-      <div id="winnersContainer">
-        <!-- 1st Place -->
-        <div class="winner-item">
-          <div class="winner-info">
-            <span class="gold" style="font-weight:700;">🥇 1st Place</span><br>
-            Username: <strong>Beauty4</strong><br>
-            +264812**008<br>
-            Prize: N$1500
+    <!-- Earnings Section (shown only when logged in) -->
+    <div id="earningsContainer" class="hidden">
+      <div class="card">
+        <h2 class="gold">💰 Your Earnings</h2>
+        <div class="earnings-card">
+          <div class="earnings-stats">
+            <div class="stat-box">
+              <div>Direct Referrals</div>
+              <div class="stat-value" id="monthlyDirectCount">0</div>
+              <div class="format-hint">This month (N$6 each)</div>
+            </div>
+            <div class="stat-box">
+              <div>Second Level</div>
+              <div class="stat-value" id="monthlySecondLevelCount">0</div>
+              <div class="format-hint">This month (N$2 each)</div>
+            </div>
+            <div class="stat-box">
+              <div>Bonus</div>
+              <div class="stat-value" id="bonusAmount">N$0</div>
+            </div>
           </div>
-          <button class="claim-btn" data-username="Beauty4" data-position="1st" data-prize="N$1500">🎁 Claim Reward</button>
-        </div>
-        <!-- 2nd Place -->
-        <div class="winner-item">
-          <div class="winner-info">
-            <span class="gold" style="font-weight:700;">🥈 2nd Place</span><br>
-            Username: <strong>Grace22</strong><br>
-            +264814**399<br>
-            Prize: N$1000
+          
+          <div style="text-align:center; margin:1rem 0;">
+            <div>Available Balance</div>
+            <div class="balance-amount" id="commissionBalance">N$0</div>
           </div>
-          <button class="claim-btn" data-username="Grace22" data-position="2nd" data-prize="N$1000">🎁 Claim Reward</button>
-        </div>
-        <!-- 3rd Place -->
-        <div class="winner-item">
-          <div class="winner-info">
-            <span class="gold" style="font-weight:700;">🥉 3rd Place</span><br>
-            Username: <strong>BigJ077</strong><br>
-            +264814**177<br>
-            Prize: N$500
+          
+          <div style="text-align:center; margin:0.5rem 0;">
+            <div>Total Withdrawn (Lifetime)</div>
+            <div class="stat-value" id="totalWithdrawn">N$0</div>
           </div>
-          <button class="claim-btn" data-username="BigJ077" data-position="3rd" data-prize="N$500">🎁 Claim Reward</button>
+          
+          <div class="earnings-stats" style="margin-top:0.5rem;">
+            <div class="stat-box">
+              <div>Lifetime Direct</div>
+              <div class="stat-value" id="lifetimeDirectCount">0</div>
+            </div>
+            <div class="stat-box">
+              <div>Lifetime Second Level</div>
+              <div class="stat-value" id="lifetimeSecondLevelCount">0</div>
+            </div>
+          </div>
+          
+          <div id="bonusWarning" class="hidden" style="background:#6d2e2e; border-radius:60px; padding:0.5rem; margin-top:0.5rem; font-size:0.8rem; text-align:center;"></div>
+          
+          <div id="withdrawCountdown" class="withdraw-countdown">
+            <span id="withdrawStatus">Checking withdrawal availability...</span>
+          </div>
+          <button class="btn-primary" id="withdrawBtn" style="margin-top:1rem;">💰 Request Withdrawal</button>
         </div>
       </div>
-      <p style="font-size:0.9rem; margin-top:0.8rem;">Winners have been randomly selected based on their verified referrals. Click Claim Reward to receive your prize.</p>
     </div>
 
-    <!-- Grand Prize + Leaderboard (TOP 10) -->
+    <!-- Top Withdrawers Leaderboard (visible to everyone) -->
+    <div class="card">
+      <h2 class="gold">🏆 Top Withdrawers (All Time)</h2>
+      <div id="topWithdrawersContainer">
+        <p style="text-align:center; color:#d4af37;">Loading top withdrawers...</p>
+      </div>
+    </div>
+
+    <!-- Grand Prize + Leaderboard -->
     <div class="card">
       <h2 class="gold">🏆 Grand Prize (N$12,000)</h2>
       <p>When AmaWina reaches 50k followers:</p>
@@ -692,24 +769,22 @@
         <span><span class="gold">🥉</span> N$2000</span>
       </div>
       
-      <h3 class="gold">📊 Top 10 Verified Referrers</h3>
+      <h3 class="gold">📊 Top Verified Referrers (Lifetime)</h3>
       <div id="leaderboard-container">
         <p style="text-align:center; color:#d4af37;">Loading leaderboard...</p>
       </div>
       
-      <!-- Motivation message box (dynamic) -->
       <div id="motivationBox" class="motivation-box hidden">
         <span id="motivationMessage"></span>
       </div>
       
-      <p style="font-size:0.8rem; margin-top:1rem;">Leaderboard updates automatically every 60 seconds from real verification data.</p>
+      <p style="font-size:0.8rem; margin-top:1rem;">Leaderboard updates automatically every 60 seconds.</p>
     </div>
 
     <!-- Registration Form -->
     <div class="card" id="registerCard">
       <h2 class="gold" id="registerSection">📝 Register Now</h2>
       
-      <!-- Channel reminder button -->
       <button class="channel-reminder-btn" id="channelReminderBtn">
         ⚡ Join both channels above first! Click to scroll up ⚡
       </button>
@@ -720,22 +795,23 @@
         <form id="registerForm">
           <input type="hidden" id="invitedBy" name="invitedBy" value="">
           <div class="form-group">
-            <label>Username <span class="gold">(unique, no spaces, this will be used in your referral link and to login)</span></label>
-            <input type="text" id="username" placeholder="e.g., Felly005" required pattern="[A-Za-z0-9]+" title="Username must contain only letters and numbers, no spaces">
+            <label>Username <span class="gold">(unique, no spaces)</span></label>
+            <input type="text" id="username" placeholder="e.g., Felly005" required pattern="[A-Za-z0-9]+">
           </div>
           <div class="form-group">
             <label>WhatsApp Number (Namibia)</label>
             <input type="tel" id="whatsapp" placeholder="0812345678 or +264812345678" required>
             <div class="format-hint">
-              <span>📱 Format:</span> 264812345678 (MTC) or 264851234567 (TN)<br>
-              You can also use 081..., 085..., or +264...
+              <span>📱 Format:</span> 264812345678 (MTC) or 264851234567 (TN)
             </div>
+          </div>
+          <div class="format-hint gold" style="text-align:center; margin-top:0.5rem;">
+            ✅ After registration, login to see your N$100 welcome bonus!
           </div>
           <button type="submit" class="btn-primary">✔️ Register & Get Referral Link</button>
         </form>
       </div>
 
-      <!-- Celebration Popup -->
       <div id="celebrationPopup" class="popup-celebration hidden">
         <div style="font-size:3rem;">🎉🎁✨</div>
         <h2 class="gold">Entry Submitted Successfully!</h2>
@@ -749,67 +825,98 @@
           <button class="btn-outline" id="copyLinkBtn">📋 Copy</button>
           <button class="btn-outline" id="shareBtn">💬 Share</button>
         </div>
+        <p class="gold" style="margin-top:1rem;">🔐 Login now to see your N$100 welcome bonus!</p>
+      </div>
+    </div>
+
+    <!-- Withdrawal Modal -->
+    <div id="withdrawModal" class="modal">
+      <div class="modal-content">
+        <h3 class="gold">💰 Request Withdrawal</h3>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="withdrawUsername" readonly>
+        </div>
+        <div class="form-group">
+          <label>Available Balance</label>
+          <input type="text" id="withdrawBalance" readonly>
+        </div>
+        <div class="form-group">
+          <label>Withdrawal Amount</label>
+          <input type="number" id="withdrawAmount" placeholder="Enter amount" step="1">
+          <div class="format-hint">Minimum: N$400 | Maximum: Your balance</div>
+        </div>
+        <div class="form-group">
+          <label>Payment Method</label>
+          <select id="paymentMethod">
+            <option value="bank">FNB Bank Transfer</option>
+            <option value="ewallet">FNB Ewallet (Namibia)</option>
+            <option value="redotpay">RedotPay (Crypto)</option>
+          </select>
+        </div>
+        <div id="bankField" class="condition-field">
+          <div class="form-group">
+            <label>Bank Account Number</label>
+            <input type="text" id="bankAccount" placeholder="Enter bank account number">
+          </div>
+        </div>
+        <div id="ewalletField" class="condition-field">
+          <div class="form-group">
+            <label>Ewallet Number</label>
+            <input type="tel" id="ewalletNumber" placeholder="Enter ewallet number">
+          </div>
+        </div>
+        <div id="redotpayField" class="condition-field">
+          <div class="form-group">
+            <label>RedotPay Email</label>
+            <input type="email" id="redotpayEmail" placeholder="Enter your email">
+          </div>
+          <div class="format-hint">Don't have RedotPay? <a href="https://url.hk/i/en/rkibk" target="_blank" style="color:#d4af37;">Create free account here</a></div>
+        </div>
+        <div class="modal-buttons">
+          <button class="btn-outline" id="closeModalBtn">Cancel</button>
+          <button class="btn-primary" id="submitWithdrawBtn">Submit Request</button>
+        </div>
       </div>
     </div>
 
     <!-- Save Contact -->
     <div class="card">
       <h2 class="gold">💾 Save AmaWina WhatsApp Contact</h2>
-      <p>Save the AmaWina WhatsApp number to receive important giveaway updates, announcements and bonus opportunities. Participants who save the contact will also be able to see important updates shared on AmaWina WhatsApp Status.</p>
+      <p>Save our number to receive important updates.</p>
       <p style="font-size:2.5rem; font-weight:700; color:#d4af37; margin:1rem 0;">+264858037092</p>
       <button class="btn-outline" id="saveContactBtn">📱 Save AmaWina Contact</button>
     </div>
 
-    <!-- ===== FULL ABOUT AMAWINA & WINAX SECTION ===== -->
+    <!-- About Section -->
     <div class="card expandable" id="aboutCard">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2 class="gold">📘 About AmaWina & WinaX</h2>
         <span class="expand-icon" style="font-size:1.5rem;">▼</span>
       </div>
       <div class="expand-content">
-        <p style="margin-top:1rem;">AmaWina is a premium clothing brand created to represent ambition, identity and the mindset of champions. The brand is built around the philosophy "Where Champions Rise", encouraging individuals to pursue excellence, confidence and success in their daily lives.</p>
-        <p style="margin-top:1rem;">AmaWina designs are inspired by modern streetwear culture combined with a strong message of resilience, self belief and forward thinking.</p>
-        <p style="margin-top:1rem;">The brand represents individuals who refuse to settle for mediocrity and instead pursue growth, discipline and success.</p>
-        <p style="margin-top:1rem;">WinaX is a forex trading and financial education entity focused on helping traders understand financial markets through structured learning, discipline and proper risk management.</p>
-        <p style="margin-top:1rem;">WinaX shares trading insights, market education and opportunities for traders who want to improve their skills in forex trading and financial markets.</p>
-        <p style="margin-top:1rem;">Both AmaWina and WinaX are founded by Robin Banks, a Namibian entrepreneur and forex trader with more than 10 years of experience studying and trading financial markets.</p>
-        <p style="margin-top:1rem;">Through AmaWina and WinaX, the mission is to build a community of ambitious individuals who believe in growth, financial education and long term success.</p>
+        <p>AmaWina is a premium clothing brand created to represent ambition, identity and the mindset of champions.</p>
+        <p>WinaX is a forex trading and financial education entity focused on helping traders understand financial markets.</p>
+        <p>Both brands are founded by Robin Banks, a Namibian entrepreneur and forex trader with over 10 years of experience.</p>
       </div>
     </div>
 
-    <!-- ===== FULL TERMS AND CONDITIONS ===== -->
+    <!-- Terms Section (PROFESSIONAL VERSION) -->
     <div class="card expandable" id="termsCard">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2 class="gold">📜 Terms & Conditions</h2>
         <span class="expand-icon" style="font-size:1.5rem;">▼</span>
       </div>
       <div class="expand-content">
-        <ul style="margin-left:1.2rem; margin-top:1rem; list-style-type: disc;">
-          <li>Participants must follow both the AmaWina WhatsApp Channel and the WinaX WhatsApp Channel to participate.</li>
-          <li>Participants must register using a valid WhatsApp number.</li>
-          <li>After registering, participants must verify their entry by sending the WhatsApp verification message.</li>
-          <li>Only verified participants are counted in the referral system.</li>
-          <li>A minimum of 10 verified referrals within a month is required to qualify for the monthly giveaway draw.</li>
-          <li>The monthly giveaway winners are selected randomly by the system from qualified participants.</li>
-          <li>The monthly draw takes place automatically on the 5th of every month.</li>
-          <li>The AmaWina Grand Prize Giveaway totals N$12,000 and will be awarded when the AmaWina WhatsApp Channel reaches 50,000 followers.</li>
+        <ul>
+          <li>Participants must follow both WhatsApp channels to participate.</li>
+          <li>Commission: N$6 per direct verified referral, N$2 per second-level verified referral (monthly counts reset after withdrawal).</li>
+          <li>Minimum withdrawal: N$400, available only on the 5th of each month.</li>
+          <li>N$100 welcome bonus for new users, expires after 30 days if withdrawal not reached.</li>
+          <li>Grand Prize N$12,000 awarded when channel reaches 50k followers.</li>
+          <li><strong>🔍 Withdrawal Verification Policy</strong><br>All withdrawal requests are subject to a compliance review prior to processing. The review includes verification that referred participants remain active members of the required WhatsApp channels. AmaWina reserves the right to adjust the withdrawal amount by deducting earnings attributed to any referred participant who is no longer an active member of the required channels at the time of withdrawal request. This ensures fairness and integrity of the referral program for all participants.</li>
         </ul>
-        <div style="margin:0.5rem 0 1rem 1.2rem;">
-          <p><span class="gold">Grand Prize structure:</span><br>
-          1st Place – N$6000<br>
-          2nd Place – N$4000<br>
-          3rd Place – N$2000</p>
-        </div>
-        <ul style="margin-left:1.2rem; list-style-type: disc;">
-          <li>Only verified referrals count toward the Grand Prize leaderboard.</li>
-          <li>AmaWina reserves the right to review referral activity and disqualify participants involved in fraudulent or suspicious activity.</li>
-          <li>Fake numbers, automated registrations or manipulation of the referral system will lead to immediate disqualification.</li>
-          <li>This giveaway promotion is not affiliated with WhatsApp.</li>
-          <li>AmaWina may update the rules if necessary to maintain fairness and transparency.</li>
-        </ul>
-        <p style="margin-top:1rem;">Support contact:<br>
-        WhatsApp: +264858037092<br>
-        Email: amawinaofficial@gmail.com</p>
+        <p>Support: +264858037092 | amawinaofficial@gmail.com</p>
       </div>
     </div>
   </div>
@@ -820,7 +927,20 @@
       // ---------- CONFIGURATION ----------
       const OWNER_NUMBER = '264858037092';
       const BASE_URL = 'https://amawinagiveaway.pages.dev';
-      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm-YZnumNYnR2rWKZZHJ8gyQrx3XRLS7eyE5Sf6FUBnqoBPdm2LsI4ajKWBnFMqhZo/exec';
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfBK2rf0YnhAlrKXfMlEiMa_xjpyo2pDeVwTih-p0ZFkayDZKHLbRwsMvFtQqbEIDz/exec';
+      const LAUNCH_DATE = new Date('2026-04-09T00:00:00');
+
+      // ---------- WELCOME POPUP ----------
+      if (!localStorage.getItem('welcomePopupSeen')) {
+        document.getElementById('welcomePopup').style.display = 'flex';
+      } else {
+        document.getElementById('welcomePopup').style.display = 'none';
+      }
+      
+      document.getElementById('welcomeOkBtn').addEventListener('click', function() {
+        localStorage.setItem('welcomePopupSeen', 'true');
+        document.getElementById('welcomePopup').style.display = 'none';
+      });
 
       // ---------- USER IDENTIFICATION ----------
       let currentUserWA = localStorage.getItem('amawina_user_wa');
@@ -828,39 +948,19 @@
       
       // ---------- GLOBAL DATA STORAGE ----------
       let allReferrals = [];
-      let monthlyWinners = [];
-
-      // ---------- IP TRACKING STORAGE ----------
-      let ipRecords = JSON.parse(localStorage.getItem('amawina_ip_records')) || [];
-
-      // ---------- CLAIM REWARD BUTTON HANDLERS ----------
-      function setupClaimButtons() {
-        document.querySelectorAll('.claim-btn').forEach(btn => {
-          btn.removeEventListener('click', claimHandler);
-          btn.addEventListener('click', claimHandler);
-        });
-      }
-      
-      function claimHandler(e) {
-        const btn = e.currentTarget;
-        const username = btn.getAttribute('data-username');
-        const position = btn.getAttribute('data-position');
-        const prize = btn.getAttribute('data-prize');
-        
-        // Construct the message (no phone number revealed)
-        const message = `I'm ${username}, ${position} Place winner in AmaWina Giveaway. Claiming my ${prize} reward.`;
-        
-        // Open WhatsApp with pre-filled message to YOUR business number
-        window.open(`https://wa.me/${OWNER_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
-      }
+      let currentUserMonthlyDirect = 0;
+      let currentUserMonthlySecondLevel = 0;
+      let currentUserLifetimeDirect = 0;
+      let currentUserLifetimeSecondLevel = 0;
+      let currentUserBonus = 0;
+      let currentUserBonusExpiry = null;
+      let currentUserTotalWithdrawn = 0;
+      let currentUserCommissionBalance = 0;
 
       // ---------- HELPER FUNCTIONS ----------
       function maskNumber(num) {
         const cleaned = num.toString().replace(/\D/g, '');
         if (cleaned.length < 9) return num;
-        
-        // Format: 264815562858 -> 264812**678
-        // Keep first 6 digits, hide 2, show last 3
         const start = cleaned.slice(0, 6);
         const end = cleaned.slice(-3);
         return start + '**' + end;
@@ -868,7 +968,6 @@
 
       function isValidNamibian(num) {
         const c = num.replace(/\s+/g, '');
-        // Support 081xxxxxxx, 085xxxxxxx, +26481xxxxxxx, +26485xxxxxxx, 26481xxxxxxx, 26485xxxxxxx
         return /^081\d{7}$/.test(c) || /^085\d{7}$/.test(c) || 
                /^\+26481\d{7}$/.test(c) || /^\+26485\d{7}$/.test(c) ||
                /^26481\d{7}$/.test(c) || /^26485\d{7}$/.test(c);
@@ -882,46 +981,10 @@
         if (cleaned.startsWith('+26485')) return '264' + cleaned.slice(5);
         if (cleaned.startsWith('26481') && cleaned.length === 12) return cleaned;
         if (cleaned.startsWith('26485') && cleaned.length === 12) return cleaned;
-        return cleaned; // Already normalized
+        return cleaned;
       }
 
-      // ---------- GET USER IP ADDRESS ----------
-      async function getUserIP() {
-        try {
-          const response = await fetch('https://api.ipify.org?format=json');
-          const data = await response.json();
-          return data.ip;
-        } catch (error) {
-          console.error('Error getting IP:', error);
-          return 'unknown';
-        }
-      }
-
-      // ---------- CHECK IP REGISTRATION LIMITS ----------
-      async function checkIPLimit() {
-        const userIP = await getUserIP();
-        
-        // Filter records from this IP in the last 7 days
-        const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-        const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
-        
-        const recentFromThisIP = ipRecords.filter(record => 
-          record.ip === userIP && record.timestamp > oneWeekAgo
-        );
-        
-        const todayFromThisIP = ipRecords.filter(record => 
-          record.ip === userIP && record.timestamp > oneDayAgo
-        );
-        
-        return {
-          canRegister: recentFromThisIP.length < 3 && todayFromThisIP.length === 0,
-          totalThisWeek: recentFromThisIP.length,
-          totalToday: todayFromThisIP.length,
-          ip: userIP
-        };
-      }
-
-      // ---------- NAMIBIA TIME ----------
+      // ---------- GET NAMIBIA TIME ----------
       function getNamibiaTime() {
         const now = new Date();
         const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
@@ -930,68 +993,100 @@
 
       function updateClock() {
         const d = getNamibiaTime();
-        document.getElementById('namibiaClock').innerText = 
-          d.toLocaleDateString('en-GB') + ' ' + d.toTimeString().split(' ')[0] + ' WAT';
+        const clockElement = document.getElementById('namibiaClock');
+        if (clockElement) {
+          clockElement.innerText = d.toLocaleDateString('en-GB') + ' ' + d.toTimeString().split(' ')[0] + ' WAT';
+        }
       }
       setInterval(updateClock, 1000);
       updateClock();
 
-      // ---------- COUNTDOWN TO 5TH ----------
-      function getNextDrawDate() {
+      // ---------- CHECK IF TODAY IS THE 5TH ----------
+      function isWithdrawalDay() {
         const now = getNamibiaTime();
-        let draw = new Date(now);
-        draw.setDate(5);
-        draw.setHours(0,0,0,0);
-        if (now > draw) {
-          draw.setMonth(draw.getMonth() + 1);
-          draw.setDate(5);
+        return now.getDate() === 5;
+      }
+
+      // ---------- GET NEXT WITHDRAWAL DATE ----------
+      function getNextWithdrawalDate() {
+        const now = getNamibiaTime();
+        let next = new Date(now);
+        if (now.getDate() >= 5) {
+          next.setMonth(next.getMonth() + 1);
         }
-        return draw;
+        next.setDate(5);
+        next.setHours(0, 0, 0, 0);
+        return next;
       }
 
-      function updateCountdown() {
+      // ---------- UPDATE WITHDRAWAL COUNTDOWN ----------
+      function updateWithdrawalCountdown() {
         const now = getNamibiaTime();
-        const draw = getNextDrawDate();
-        const diff = draw - now;
-        if (diff <= 0) return;
-        document.getElementById('days').innerText = Math.floor(diff/86400000).toString().padStart(2,'0');
-        document.getElementById('hours').innerText = Math.floor((diff/3600000)%24).toString().padStart(2,'0');
-        document.getElementById('minutes').innerText = Math.floor((diff/60000)%60).toString().padStart(2,'0');
-        document.getElementById('seconds').innerText = Math.floor((diff/1000)%60).toString().padStart(2,'0');
-      }
-      setInterval(updateCountdown,1000);
-      updateCountdown();
-
-      // ---------- SCROLL FUNCTIONS ----------
-      function scrollToRegister() {
-        document.getElementById('registerCard').scrollIntoView({ behavior: 'smooth' });
-      }
-      
-      function scrollToChannels() {
-        document.getElementById('howItWorks').scrollIntoView({ behavior: 'smooth' });
-      }
-
-      // ---------- UPDATE LOGGED IN REFERRAL LINK ----------
-      function updateLoggedInReferralLink() {
-        if (currentUsername) {
-          const link = `${BASE_URL}/?ref=${currentUsername}`;
-          const linkElement = document.getElementById('loggedInReferralLink');
-          if (linkElement) {
-            linkElement.innerText = link;
+        const isWithdrawDay = now.getDate() === 5;
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        const countdownEl = document.getElementById('withdrawStatus');
+        
+        if (isWithdrawDay) {
+          if (currentUserCommissionBalance >= 400) {
+            countdownEl.innerHTML = '✅ Withdrawal available today!';
+            withdrawBtn.disabled = false;
+            withdrawBtn.style.opacity = '1';
+          } else {
+            const needed = 400 - currentUserCommissionBalance;
+            countdownEl.innerHTML = `⚠️ Withdrawal available today but you need N$${needed} more to reach minimum N$400`;
+            withdrawBtn.disabled = true;
+            withdrawBtn.style.opacity = '0.5';
           }
-          
-          // Update copy button
-          document.getElementById('loggedInCopyBtn').onclick = () => {
-            navigator.clipboard.writeText(link);
-            alert('✅ Referral link copied!');
-          };
-          
-          // Update share button
-          document.getElementById('loggedInShareBtn').onclick = () => {
-            const message = `Join AmaWina Giveaway and win cash rewards! Use my referral link: ${link}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-          };
+        } else {
+          const nextDate = getNextWithdrawalDate();
+          const days = Math.ceil((nextDate - now) / (1000 * 60 * 60 * 24));
+          countdownEl.innerHTML = `📅 Next withdrawal available on 5th (in ${days} days)`;
+          withdrawBtn.disabled = true;
+          withdrawBtn.style.opacity = '0.5';
         }
+      }
+
+      // ---------- LOAD TOP WITHDRAWERS ----------
+      function loadTopWithdrawers() {
+        const withdrawers = allReferrals
+          .filter(row => row.totalWithdrawn && row.totalWithdrawn > 0)
+          .sort((a, b) => (b.totalWithdrawn || 0) - (a.totalWithdrawn || 0))
+          .slice(0, 3);
+        
+        if (withdrawers.length === 0) {
+          document.getElementById('topWithdrawersContainer').innerHTML = `
+            <div class="top-withdrawer-row">
+              <span class="rank-medal">🥇</span>
+              <span>No withdrawals yet</span>
+              <span style="margin-left:auto;">N$0</span>
+            </div>
+            <div class="top-withdrawer-row">
+              <span class="rank-medal">🥈</span>
+              <span>Be the first!</span>
+              <span style="margin-left:auto;">N$0</span>
+            </div>
+            <div class="top-withdrawer-row">
+              <span class="rank-medal">🥉</span>
+              <span>Start referring to win</span>
+              <span style="margin-left:auto;">N$0</span>
+            </div>
+          `;
+          return;
+        }
+        
+        let html = '';
+        const medals = ['🥇', '🥈', '🥉'];
+        withdrawers.forEach((user, idx) => {
+          html += `
+            <div class="top-withdrawer-row">
+              <span class="rank-medal">${medals[idx]}</span>
+              <span>${user.name}</span>
+              <span style="margin-left:auto;">N$${user.totalWithdrawn}</span>
+            </div>
+          `;
+        });
+        
+        document.getElementById('topWithdrawersContainer').innerHTML = html;
       }
 
       // ---------- FETCH DATA ----------
@@ -1003,14 +1098,34 @@
           if (data.success && data.rows) {
             allReferrals = data.rows;
             
-            // Check for monthly draw (5th of month)
-            checkAndPerformMonthlyDraw();
-            
             if (currentUsername) {
-              calculateUserReferrals(currentUsername);
+              const userRow = allReferrals.find(row => row.name === currentUsername);
+              if (userRow) {
+                currentUserMonthlyDirect = userRow.monthlyDirectCount || 0;
+                currentUserMonthlySecondLevel = userRow.monthlySecondLevelCount || 0;
+                currentUserLifetimeDirect = userRow.lifetimeDirectCount || 0;
+                currentUserLifetimeSecondLevel = userRow.lifetimeSecondLevelCount || 0;
+                currentUserBonus = userRow.bonusAmount || 0;
+                currentUserBonusExpiry = userRow.bonusExpiryDate || null;
+                currentUserTotalWithdrawn = userRow.totalWithdrawn || 0;
+                
+                // Calculate commission balance
+                let balance = (currentUserMonthlyDirect * 6) + (currentUserMonthlySecondLevel * 2);
+                if (currentUserBonus && currentUserBonusExpiry) {
+                  const expiryDate = new Date(currentUserBonusExpiry);
+                  if (getNamibiaTime() < expiryDate) {
+                    balance += currentUserBonus;
+                  }
+                }
+                currentUserCommissionBalance = balance;
+                
+                updateEarningsDisplay();
+                updateWithdrawalCountdown();
+              }
             }
             
             calculateLeaderboard();
+            loadTopWithdrawers();
             console.log('Data refreshed:', new Date().toLocaleTimeString());
           }
         } catch (error) {
@@ -1018,167 +1133,33 @@
         }
       }
 
-      // ---------- MONTHLY DRAW LOGIC ----------
-      function checkAndPerformMonthlyDraw() {
-        const now = getNamibiaTime();
-        const today = now.getDate();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
+      function updateEarningsDisplay() {
+        document.getElementById('monthlyDirectCount').innerHTML = currentUserMonthlyDirect;
+        document.getElementById('monthlySecondLevelCount').innerHTML = currentUserMonthlySecondLevel;
+        document.getElementById('commissionBalance').innerHTML = `N$${currentUserCommissionBalance}`;
+        document.getElementById('totalWithdrawn').innerHTML = `N$${currentUserTotalWithdrawn}`;
+        document.getElementById('lifetimeDirectCount').innerHTML = currentUserLifetimeDirect;
+        document.getElementById('lifetimeSecondLevelCount').innerHTML = currentUserLifetimeSecondLevel;
         
-        // Check if it's the 5th and time is between 00:00 and 00:05
-        if (today === 5 && currentHour === 0 && currentMinute < 5) {
-          
-          // Check if we already performed draw today (prevent multiple runs)
-          const lastDrawDate = localStorage.getItem('last_draw_date');
-          const todayStr = now.toDateString();
-          
-          if (lastDrawDate !== todayStr) {
-            performMonthlyDraw();
-            localStorage.setItem('last_draw_date', todayStr);
+        let bonusDisplay = 0;
+        if (currentUserBonus && currentUserBonusExpiry) {
+          const expiryDate = new Date(currentUserBonusExpiry);
+          if (getNamibiaTime() < expiryDate) {
+            bonusDisplay = currentUserBonus;
+            const daysLeft = Math.ceil((expiryDate - getNamibiaTime()) / (1000 * 60 * 60 * 24));
+            document.getElementById('bonusWarning').innerHTML = `🎁 N$${currentUserBonus} welcome bonus expires in ${daysLeft} days!`;
+            document.getElementById('bonusWarning').classList.remove('hidden');
+          } else {
+            document.getElementById('bonusWarning').innerHTML = `⚠️ Your N$${currentUserBonus} welcome bonus has expired.`;
+            document.getElementById('bonusWarning').classList.remove('hidden');
           }
-        }
-      }
-
-      function performMonthlyDraw() {
-        // Get previous month (since we're at 5th of new month)
-        const now = getNamibiaTime();
-        let drawMonth = now.getMonth() - 1; // Previous month
-        let drawYear = now.getFullYear();
-        if (drawMonth < 0) {
-          drawMonth = 11;
-          drawYear--;
-        }
-        
-        // Find all users with 10+ verified referrals in previous month
-        const qualifiedUsers = new Map();
-        const userNames = new Map();
-        
-        allReferrals.forEach(row => {
-          if (row.verified === 'YES' && row.invitedBy) {
-            const referralDate = new Date(row.timestamp);
-            if (referralDate.getMonth() === drawMonth && 
-                referralDate.getFullYear() === drawYear) {
-              
-              const inviter = row.invitedBy.toString();
-              qualifiedUsers.set(inviter, (qualifiedUsers.get(inviter) || 0) + 1);
-              
-              // Store name if we have it
-              if (row.name && !userNames.has(inviter)) {
-                userNames.set(inviter, row.name);
-              }
-            }
-          }
-        });
-        
-        // Filter to only those with 10+ referrals
-        const eligible = [];
-        qualifiedUsers.forEach((count, wa) => {
-          if (count >= 10) {
-            eligible.push({
-              wa: wa,
-              name: userNames.get(wa) || 'Anonymous',
-              count: count
-            });
-          }
-        });
-        
-        // Select 3 random winners if we have enough eligible
-        if (eligible.length >= 3) {
-          // Shuffle array
-          for (let i = eligible.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [eligible[i], eligible[j]] = [eligible[j], eligible[i]];
-          }
-          
-          const winners = eligible.slice(0, 3);
-          monthlyWinners = winners;
-          
-          // Display winners
-          displayMonthlyWinners(winners);
-        }
-      }
-
-      function displayMonthlyWinners(winners) {
-        const prizes = ['N$1500', 'N$1000', 'N$500'];
-        let html = '';
-        
-        winners.forEach((winner, idx) => {
-          const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
-          // Find WhatsApp number for this username
-          const userRow = allReferrals.find(row => row.name === winner.name);
-          const maskedWA = userRow ? maskNumber(userRow.whatsapp) : 'Unknown';
-          
-          html += `<div class="winner-item">
-            <div class="winner-info">
-              ${medal} ${idx + 1} Place<br>
-              Username: ${winner.name}<br>
-              WhatsApp: ${maskedWA}<br>
-              Prize: ${prizes[idx]}
-            </div>
-          </div>`;
-        });
-        
-        document.getElementById('winnersContainer').innerHTML = html;
-        setupClaimButtons();
-      }
-
-      // ---------- CHECK IF USERNAME EXISTS ----------
-      function checkUsernameExists(username) {
-        // Search through allReferrals
-        return allReferrals.some(row => row.name === username);
-      }
-
-      // ---------- CHECK IF WHATSAPP EXISTS ----------
-      function checkWhatsAppExists(whatsapp) {
-        const normalizedWA = normalizeNumber(whatsapp);
-        return allReferrals.some(row => row.whatsapp.toString() === normalizedWA);
-      }
-
-      // ---------- CALCULATE USER REFERRAL COUNTS ----------
-      function calculateUserReferrals(username) {
-        const now = getNamibiaTime();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-        
-        let monthlyCount = 0;
-        let lifetimeCount = 0;
-        
-        allReferrals.forEach(row => {
-          const invitedBy = row.invitedBy ? row.invitedBy.toString() : '';
-          
-          if (invitedBy === username && row.verified === 'YES') {
-            lifetimeCount++;
-            const referralDate = new Date(row.timestamp);
-            if (referralDate.getMonth() === currentMonth && 
-                referralDate.getFullYear() === currentYear) {
-              monthlyCount++;
-            }
-          }
-        });
-        
-        updateProgressBars(monthlyCount, lifetimeCount);
-      }
-
-      // ---------- UPDATE PROGRESS BARS ----------
-      function updateProgressBars(monthly, lifetime) {
-        document.getElementById('monthlyCountDisplay').innerText = `${monthly} / 10 Verified Referrals`;
-        const percent = Math.min(100, (monthly/10)*100);
-        document.getElementById('monthlyProgressFill').style.width = percent + '%';
-        document.getElementById('lifetimeCountDisplay').innerText = `${lifetime} Lifetime Verified Referrals`;
-
-        if (monthly >= 10) {
-          document.getElementById('monthlyMessage').innerHTML = 
-            `You have qualified for this month's draw. Additional referrals increase your chances of winning. (${monthly} verified)`;
-          document.getElementById('qualifiedBadge').classList.remove('hidden');
         } else {
-          const needed = 10 - monthly;
-          document.getElementById('monthlyMessage').innerText = 
-            `${needed} more verified referrals needed to qualify for this month's draw.`;
-          document.getElementById('qualifiedBadge').classList.add('hidden');
+          document.getElementById('bonusWarning').classList.add('hidden');
         }
+        document.getElementById('bonusAmount').innerHTML = `N$${bonusDisplay}`;
       }
 
-      // ---------- CALCULATE LEADERBOARD (TOP 10) ----------
+      // ---------- CALCULATE LEADERBOARD ----------
       function calculateLeaderboard() {
         const referrerMap = new Map();
         
@@ -1191,72 +1172,21 @@
         
         const leaderboardArray = [];
         referrerMap.forEach((count, username) => {
-          leaderboardArray.push({
-            username: username,
-            count: count
-          });
+          leaderboardArray.push({ username: username, count: count });
         });
         
         leaderboardArray.sort((a, b) => b.count - a.count);
         const topTen = leaderboardArray.slice(0, 10);
         renderLeaderboard(topTen);
         
-        // Update motivation message for logged in user
         if (currentUsername) {
           updateMotivationMessage(leaderboardArray);
         }
       }
 
-      // ---------- UPDATE MOTIVATION MESSAGE ----------
-      function updateMotivationMessage(allUsers) {
-        const userIndex = allUsers.findIndex(u => u.username === currentUsername);
-        const motivationBox = document.getElementById('motivationBox');
-        const motivationMsg = document.getElementById('motivationMessage');
-        
-        if (userIndex === -1) {
-          // User not in top 10
-          if (allUsers.length >= 10) {
-            const tenthPlace = allUsers[9].count;
-            const userLifetime = allUsers.find(u => u.username === currentUsername)?.count || 0;
-            const needed = tenthPlace - userLifetime + 1;
-            if (needed > 0) {
-              motivationMsg.innerText = `💪 You need ${needed} more verified referrals to reach the Top 10 leaderboard!`;
-              motivationBox.classList.remove('hidden');
-            } else {
-              motivationBox.classList.add('hidden');
-            }
-          } else {
-            // Less than 10 people on leaderboard
-            motivationMsg.innerText = `💪 Keep inviting! You can be the next one on this leaderboard!`;
-            motivationBox.classList.remove('hidden');
-          }
-        } else if (userIndex < 3) {
-          // User is in top 3
-          if (userIndex === 0) {
-            motivationMsg.innerText = `👑 You're #1! Amazing work! Keep going to stay on top!`;
-          } else {
-            const nextRank = allUsers[userIndex - 1];
-            const needed = nextRank.count - allUsers[userIndex].count + 1;
-            motivationMsg.innerText = `👑 You're #${userIndex + 1}! Just ${needed} more referrals to reach #${userIndex}!`;
-          }
-          motivationBox.classList.remove('hidden');
-        } else if (userIndex < 10) {
-          // User is in top 10 but not top 3
-          const thirdPlace = allUsers[2].count;
-          const needed = thirdPlace - allUsers[userIndex].count + 1;
-          motivationMsg.innerText = `🔥 You're #${userIndex + 1}! Just ${needed} more referrals to break into the TOP 3 and win cash prizes!`;
-          motivationBox.classList.remove('hidden');
-        } else {
-          // User is beyond top 10
-          motivationBox.classList.add('hidden');
-        }
-      }
-
-      // ---------- RENDER LEADERBOARD (TOP 10) ----------
       function renderLeaderboard(leaderboardData) {
         if (!leaderboardData || leaderboardData.length === 0) {
-          document.getElementById('leaderboard-container').innerHTML = 
-            '<p style="text-align:center; color:#d4af37;">No verified referrals yet</p>';
+          document.getElementById('leaderboard-container').innerHTML = '<p style="text-align:center; color:#d4af37;">No verified referrals yet</p>';
           return;
         }
 
@@ -1268,21 +1198,18 @@
           else if (rank === 2) rankClass = 'rank-2';
           else if (rank === 3) rankClass = 'rank-3';
           
-          // Only show prize tags for top 3
           let prize = '';
           if (rank === 1) prize = '🥇 N$6000';
           else if (rank === 2) prize = '🥈 N$4000';
           else if (rank === 3) prize = '🥉 N$2000';
 
-          const displayName = entry.username;
-          // Find WhatsApp number for this username
           const userRow = allReferrals.find(row => row.name === entry.username);
           const maskedWA = userRow ? maskNumber(userRow.whatsapp) : 'Unknown';
 
           html += `<div class="leaderboard-row ${rankClass}">
             <span class="leaderboard-rank">${rank}</span>
             <div class="leaderboard-info">
-              <span class="leaderboard-name">${displayName}</span>
+              <span class="leaderboard-name">${entry.username}</span>
               <span class="leaderboard-number">${maskedWA}</span>
               <span class="leaderboard-invites">${entry.count} verified</span>
               ${prize ? '<span class="prize-tag">'+prize+'</span>' : ''}
@@ -1293,45 +1220,58 @@
         document.getElementById('leaderboard-container').innerHTML = html;
       }
 
+      function updateMotivationMessage(allUsers) {
+        const userIndex = allUsers.findIndex(u => u.username === currentUsername);
+        const motivationBox = document.getElementById('motivationBox');
+        const motivationMsg = document.getElementById('motivationMessage');
+        
+        if (userIndex === -1) {
+          motivationMsg.innerText = `💪 Keep inviting! You can be on the Grand Prize leaderboard!`;
+          motivationBox.classList.remove('hidden');
+        } else if (userIndex < 3) {
+          if (userIndex === 0) {
+            motivationMsg.innerText = `👑 You're #1 for Grand Prize! Amazing work!`;
+          } else {
+            const needed = allUsers[userIndex - 1].count - allUsers[userIndex].count + 1;
+            motivationMsg.innerText = `👑 You're #${userIndex + 1} for Grand Prize! Just ${needed} more to move up!`;
+          }
+          motivationBox.classList.remove('hidden');
+        } else if (userIndex < 10) {
+          const thirdPlace = allUsers[2].count;
+          const needed = thirdPlace - allUsers[userIndex].count + 1;
+          motivationMsg.innerText = `🔥 You're #${userIndex + 1} for Grand Prize! Just ${needed} more to reach Top 3!`;
+          motivationBox.classList.remove('hidden');
+        } else {
+          motivationBox.classList.add('hidden');
+        }
+      }
+
       // ---------- LOGIN FUNCTION ----------
       async function login(username, whatsapp) {
         try {
-          // Normalize WhatsApp number
           const normalizedWA = normalizeNumber(whatsapp);
-          
-          // Convert to string for comparison
           const normalizedWAStr = String(normalizedWA);
           
-          // Find user in allReferrals - compare both as strings
           const userRow = allReferrals.find(row => {
             const rowWA = String(row.whatsapp).replace(/\D/g, '');
             return row.name === username && rowWA === normalizedWAStr;
           });
           
           if (userRow) {
-            // Store in localStorage
             localStorage.setItem('amawina_user_wa', normalizedWAStr);
             localStorage.setItem('amawina_username', username);
             
             currentUserWA = normalizedWAStr;
             currentUsername = username;
             
-            // Update UI
             document.getElementById('loginFormContainer').classList.add('hidden');
             document.getElementById('userWelcome').classList.remove('hidden');
             document.getElementById('welcomeUsername').innerText = username;
-            
-            // Show referral link card
             document.getElementById('referralCardContainer').classList.remove('hidden');
+            document.getElementById('earningsContainer').classList.remove('hidden');
             updateLoggedInReferralLink();
             
-            // Calculate and show progress
-            calculateUserReferrals(username);
-            
-            // Update motivation message
-            setTimeout(() => {
-              calculateLeaderboard();
-            }, 500);
+            await fetchReferralData();
             
             return true;
           } else {
@@ -1345,7 +1285,6 @@
         }
       }
 
-      // ---------- LOGOUT FUNCTION ----------
       function logout() {
         localStorage.removeItem('amawina_user_wa');
         localStorage.removeItem('amawina_username');
@@ -1356,54 +1295,121 @@
         document.getElementById('loginFormContainer').classList.remove('hidden');
         document.getElementById('userWelcome').classList.add('hidden');
         document.getElementById('referralCardContainer').classList.add('hidden');
+        document.getElementById('earningsContainer').classList.add('hidden');
         document.getElementById('motivationBox').classList.add('hidden');
-        
-        // Reset progress bars to 0
-        updateProgressBars(0, 0);
       }
 
-      // ---------- INITIALIZE ----------
-      setTimeout(() => {
-        fetchReferralData();
-      }, 1000);
-      
-      setInterval(fetchReferralData, 60000);
+      function updateLoggedInReferralLink() {
+        if (currentUsername) {
+          const link = `${BASE_URL}/?ref=${currentUsername}`;
+          document.getElementById('loggedInReferralLink').innerText = link;
+          
+          document.getElementById('loggedInCopyBtn').onclick = () => {
+            navigator.clipboard.writeText(link);
+            alert('✅ Referral link copied!');
+          };
+          
+          document.getElementById('loggedInShareBtn').onclick = () => {
+            const message = `Join AmaWina Giveaway and earn N$6 per direct referral + N$2 for second-level! Use my link: ${link}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+          };
+          
+          document.getElementById('shareWABtn').onclick = () => {
+            const message = `Join AmaWina Giveaway and earn N$6 per direct referral + N$2 for second-level! Use my link: ${link}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+          };
+          
+          document.getElementById('shareFBBtn').onclick = () => {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
+          };
+          
+          document.getElementById('shareTGBtn').onclick = () => {
+            const message = `Join AmaWina Giveaway and earn N$6 per direct referral + N$2 for second-level! Use my link: ${link}`;
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(message)}`, '_blank');
+          };
+        }
+      }
 
-      document.getElementById('invitedBy').value = new URLSearchParams(window.location.search).get('ref') || '';
-
-      // ---------- LOGIN BUTTON HANDLER ----------
-      document.getElementById('loginBtn').addEventListener('click', async () => {
-        const username = document.getElementById('loginUsername').value.trim();
-        const whatsapp = document.getElementById('loginWhatsapp').value.trim();
-        
-        if (!username || !whatsapp) {
-          document.getElementById('loginError').innerText = 'Please enter both username and WhatsApp number';
-          document.getElementById('loginError').style.display = 'block';
+      // ---------- WITHDRAWAL MODAL ----------
+      function openWithdrawModal() {
+        if (!isWithdrawalDay()) {
+          alert('Withdrawals are only available on the 5th of each month.');
+          return;
+        }
+        if (currentUserCommissionBalance < 400) {
+          alert(`Minimum withdrawal is N$400. You need N${400 - currentUserCommissionBalance} more.`);
           return;
         }
         
-        await login(username, whatsapp);
-      });
-
-      // ---------- LOGOUT BUTTON HANDLER ----------
-      document.getElementById('logoutBtn').addEventListener('click', logout);
-
-      // ---------- REGISTER LINK HANDLER ----------
-      document.getElementById('registerLink').addEventListener('click', scrollToRegister);
-
-      // ---------- CHANNEL REMINDER BUTTON HANDLER ----------
-      document.getElementById('channelReminderBtn').addEventListener('click', scrollToChannels);
-
-      // ---------- CHECK IF USER IS ALREADY LOGGED IN ----------
-      if (currentUserWA && currentUsername) {
-        document.getElementById('loginFormContainer').classList.add('hidden');
-        document.getElementById('userWelcome').classList.remove('hidden');
-        document.getElementById('welcomeUsername').innerText = currentUsername;
-        document.getElementById('referralCardContainer').classList.remove('hidden');
-        updateLoggedInReferralLink();
+        document.getElementById('withdrawUsername').value = currentUsername;
+        document.getElementById('withdrawBalance').value = `N$${currentUserCommissionBalance}`;
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('withdrawAmount').max = currentUserCommissionBalance;
+        document.getElementById('withdrawAmount').min = 400;
+        
+        document.getElementById('bankField').classList.remove('show');
+        document.getElementById('ewalletField').classList.remove('show');
+        document.getElementById('redotpayField').classList.remove('show');
+        
+        document.getElementById('withdrawModal').style.display = 'flex';
+      }
+      
+      function closeWithdrawModal() {
+        document.getElementById('withdrawModal').style.display = 'none';
+      }
+      
+      function submitWithdrawRequest() {
+        const amount = parseInt(document.getElementById('withdrawAmount').value);
+        if (isNaN(amount) || amount < 400) {
+          alert('Please enter a valid amount (minimum N$400)');
+          return;
+        }
+        if (amount > currentUserCommissionBalance) {
+          alert('Amount cannot exceed your current balance');
+          return;
+        }
+        
+        const paymentMethod = document.getElementById('paymentMethod').value;
+        let message = `💰 WITHDRAWAL REQUEST - AMAWINA 💰\n\n`;
+        message += `📅 Date: ${getNamibiaTime().toLocaleDateString()}\n`;
+        message += `👤 Username: ${currentUsername}\n`;
+        message += `💵 Amount: N$${amount}\n`;
+        message += `💳 Payment Method: `;
+        
+        if (paymentMethod === 'bank') {
+          const bankAccount = document.getElementById('bankAccount').value;
+          if (!bankAccount) {
+            alert('Please enter your bank account number');
+            return;
+          }
+          message += `FNB Bank Transfer\n🏦 Account: ${bankAccount}`;
+        } else if (paymentMethod === 'ewallet') {
+          const ewalletNumber = document.getElementById('ewalletNumber').value;
+          if (!ewalletNumber) {
+            alert('Please enter your ewallet number');
+            return;
+          }
+          message += `FNB Ewallet\n📱 Ewallet: ${ewalletNumber}`;
+        } else if (paymentMethod === 'redotpay') {
+          const redotpayEmail = document.getElementById('redotpayEmail').value;
+          if (!redotpayEmail) {
+            alert('Please enter your RedotPay email');
+            return;
+          }
+          message += `RedotPay (Crypto)\n📧 Email: ${redotpayEmail}`;
+        }
+        
+        message += `\n\n🔍 Note: All withdrawal requests are subject to compliance review. Referred members will be verified for active channel membership before processing.`;
+        
+        const remainingBalance = currentUserCommissionBalance - amount;
+        message += `\n💰 Remaining Balance: N$${remainingBalance}`;
+        
+        window.open(`https://wa.me/${OWNER_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+        closeWithdrawModal();
+        alert('Withdrawal request submitted. You will be contacted after compliance review.');
       }
 
-      // ---------- REGISTRATION FORM HANDLER ----------
+      // ---------- REGISTRATION ----------
       document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const errorDiv = document.getElementById('errorMsg');
@@ -1419,15 +1425,14 @@
           return; 
         }
         
-        // Check username format (letters and numbers only)
         if (!/^[A-Za-z0-9]+$/.test(username)) {
-          errorDiv.innerText = 'Username can only contain letters and numbers (no spaces or special characters)'; 
+          errorDiv.innerText = 'Username can only contain letters and numbers (no spaces)'; 
           errorDiv.style.display = 'block'; 
           return;
         }
         
         if (!isValidNamibian(wa)) { 
-          errorDiv.innerText = 'Please enter a valid Namibian number (081..., 085..., 26481..., or +264...)'; 
+          errorDiv.innerText = 'Please enter a valid Namibian number'; 
           errorDiv.style.display = 'block'; 
           return; 
         }
@@ -1438,30 +1443,15 @@
           return;
         }
 
-        // Check IP limits first
-        const ipCheck = await checkIPLimit();
-        if (!ipCheck.canRegister) {
-          if (ipCheck.totalThisWeek >= 3) {
-            errorDiv.innerText = 'Maximum registration limit reached (3 per IP address). Please contact support if you believe this is an error.';
-          } else if (ipCheck.totalToday >= 1) {
-            errorDiv.innerText = 'You can only register once per day from this IP address. Please try again tomorrow.';
-          }
-          errorDiv.style.display = 'block'; 
-          return;
-        }
-
-        // Check if username already exists
-        const usernameExists = checkUsernameExists(username);
+        const usernameExists = allReferrals.some(row => row.name === username);
         if (usernameExists) {
-          errorDiv.innerText = `Username '${username}' is already taken. Please choose another one.`; 
+          errorDiv.innerText = `Username '${username}' is already taken`; 
           errorDiv.style.display = 'block'; 
           return;
         }
 
         const normalizedWA = normalizeNumber(wa);
-        
-        // Check if WhatsApp number already exists
-        const whatsappExists = checkWhatsAppExists(normalizedWA);
+        const whatsappExists = allReferrals.some(row => row.whatsapp.toString() === normalizedWA);
         if (whatsappExists) {
           errorDiv.innerText = 'This WhatsApp number has already been registered'; 
           errorDiv.style.display = 'block'; 
@@ -1469,11 +1459,22 @@
         }
 
         try {
-          // Username goes directly in the Name column
+          const now = new Date();
+          const expiryDate = new Date(now);
+          expiryDate.setDate(expiryDate.getDate() + 30);
+          
           const payload = {
             name: username,
             whatsapp: normalizedWA,
-            invitedBy: invited || ''
+            invitedBy: invited || '',
+            registrationDate: now.toISOString(),
+            bonusAmount: now >= LAUNCH_DATE ? 100 : 0,
+            bonusExpiryDate: now >= LAUNCH_DATE ? expiryDate.toISOString() : null,
+            monthlyDirectCount: 0,
+            monthlySecondLevelCount: 0,
+            lifetimeDirectCount: 0,
+            lifetimeSecondLevelCount: 0,
+            commissionBalance: now >= LAUNCH_DATE ? 100 : 0
           };
 
           await fetch(APPS_SCRIPT_URL, {
@@ -1483,33 +1484,20 @@
             body: JSON.stringify(payload)
           });
 
-          // Record this registration in IP tracking
-          ipRecords.push({
-            ip: ipCheck.ip,
-            timestamp: Date.now(),
-            username: username
-          });
-          localStorage.setItem('amawina_ip_records', JSON.stringify(ipRecords));
-
-          // Store user data in localStorage and auto-login
           localStorage.setItem('amawina_user_wa', normalizedWA);
           localStorage.setItem('amawina_username', username);
           
           currentUserWA = normalizedWA;
           currentUsername = username;
 
-          // Show celebration
           document.getElementById('formWrapper').classList.add('hidden');
           document.getElementById('celebrationPopup').classList.remove('hidden');
           
-          // Update login UI
           document.getElementById('loginFormContainer').classList.add('hidden');
           document.getElementById('userWelcome').classList.remove('hidden');
           document.getElementById('welcomeUsername').innerText = username;
-          
-          // Show referral link card
           document.getElementById('referralCardContainer').classList.remove('hidden');
-          updateLoggedInReferralLink();
+          document.getElementById('earningsContainer').classList.remove('hidden');
           
           if (window.confetti) {
             confetti({particleCount: 100, spread: 70, origin: {y: 0.6}});
@@ -1517,8 +1505,6 @@
 
           const link = `${BASE_URL}/?ref=${username}`;
           document.getElementById('referralLinkDisplay').innerText = link;
-          
-          // Set verification message
           document.getElementById('verificationMessage').innerText = `VERIFY ${username}`;
 
           document.getElementById('verifyBtn').onclick = () => {
@@ -1531,7 +1517,7 @@
           };
 
           document.getElementById('shareBtn').onclick = () => {
-            const message = `Join AmaWina Giveaway and win cash rewards! Use my referral link: ${link}`;
+            const message = `Join AmaWina Giveaway and earn N$6 per direct referral + N$2 for second-level! Use my link: ${link}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
           };
 
@@ -1545,7 +1531,53 @@
         }
       });
 
-      // ---------- SAVE CONTACT BUTTON ----------
+      // ---------- INITIALIZE ----------
+      setTimeout(() => {
+        fetchReferralData();
+      }, 1000);
+      
+      setInterval(fetchReferralData, 60000);
+
+      document.getElementById('invitedBy').value = new URLSearchParams(window.location.search).get('ref') || '';
+
+      document.getElementById('loginBtn').addEventListener('click', async () => {
+        const username = document.getElementById('loginUsername').value.trim();
+        const whatsapp = document.getElementById('loginWhatsapp').value.trim();
+        
+        if (!username || !whatsapp) {
+          document.getElementById('loginError').innerText = 'Please enter both username and WhatsApp number';
+          document.getElementById('loginError').style.display = 'block';
+          return;
+        }
+        
+        await login(username, whatsapp);
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', logout);
+      document.getElementById('registerLink').addEventListener('click', () => {
+        document.getElementById('registerCard').scrollIntoView({ behavior: 'smooth' });
+      });
+      document.getElementById('channelReminderBtn').addEventListener('click', () => {
+        document.getElementById('howItWorks').scrollIntoView({ behavior: 'smooth' });
+      });
+      document.getElementById('withdrawBtn').addEventListener('click', openWithdrawModal);
+      document.getElementById('closeModalBtn').addEventListener('click', closeWithdrawModal);
+      document.getElementById('submitWithdrawBtn').addEventListener('click', submitWithdrawRequest);
+      
+      document.getElementById('paymentMethod').addEventListener('change', function() {
+        document.getElementById('bankField').classList.remove('show');
+        document.getElementById('ewalletField').classList.remove('show');
+        document.getElementById('redotpayField').classList.remove('show');
+        
+        if (this.value === 'bank') {
+          document.getElementById('bankField').classList.add('show');
+        } else if (this.value === 'ewallet') {
+          document.getElementById('ewalletField').classList.add('show');
+        } else if (this.value === 'redotpay') {
+          document.getElementById('redotpayField').classList.add('show');
+        }
+      });
+
       document.getElementById('saveContactBtn').addEventListener('click', () => {
         const vcf = `BEGIN:VCARD
 VERSION:3.0
@@ -1561,7 +1593,6 @@ END:VCARD`;
         URL.revokeObjectURL(url);
       });
 
-      // ---------- EXPANDABLE CARDS ----------
       document.querySelectorAll('.expandable').forEach(card => {
         card.addEventListener('click', function() {
           this.classList.toggle('open');
@@ -1572,8 +1603,14 @@ END:VCARD`;
         });
       });
 
-      // Setup claim buttons after page loads
-      setupClaimButtons();
+      if (currentUserWA && currentUsername) {
+        document.getElementById('loginFormContainer').classList.add('hidden');
+        document.getElementById('userWelcome').classList.remove('hidden');
+        document.getElementById('welcomeUsername').innerText = currentUsername;
+        document.getElementById('referralCardContainer').classList.remove('hidden');
+        document.getElementById('earningsContainer').classList.remove('hidden');
+        updateLoggedInReferralLink();
+      }
 
     })();
   </script>
